@@ -42,6 +42,8 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
         HyperelasticityProblem.__init__(self)
 
+        self.Gamma_history = []
+        self.Gamma_history.append(0)
         self.w_solid_incompressibility = w_solid_incompressibility
         self.vertices = vertices
         if (mesh is not None):
@@ -116,7 +118,7 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
                 self.add_incompressibility_operator()
 
             # self.add_macroscopic_stretch_symmetry_operator()
-            self.add_macroscopic_stretch_symmetry_penalty_operator(pen_val=1e6)
+            self.add_macroscopic_stretch_symmetry_penalty_operator(pen_val=1e9)
 
             # self.add_deformed_total_volume_operator()
             # self.add_deformed_solid_volume_operator()
@@ -231,38 +233,6 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
         assert (self.w_solid_incompressibility),\
             "There is no solid pressure function space. Aborting."
         return self.get_subsol_function_space(name=self.get_solid_pressure_name())
-
-
-
-    # def get_macroscopic_stress_lagrange_multiplier_name(self):
-
-    #     return "lambda_bar"
-
-
-
-    # def add_macroscopic_stress_lagrange_multiplier_subsol(self,
-    #         degree=0,
-    #         symmetry=None,
-    #         init_val=None):
-
-    #     self.add_tensor_subsol(
-    #         name=self.get_macroscopic_stress_lagrange_multiplier_name(),
-    #         family="R",
-    #         degree=degree,
-    #         symmetry=symmetry,
-    #         init_val=init_val)
-
-
-
-    # def get_macroscopic_stress_lagrange_multiplier_subsol(self):
-
-    #     return self.get_subsol(self.get_macroscopic_stress_lagrange_multiplier_name())
-
-
-
-    # def get_macroscopic_stress_lagrange_multiplier_function_space(self):
-
-    #     return self.get_subsol_function_space(name=self.get_macroscopic_stress_lagrange_multiplier_name())
 
 
 
@@ -382,9 +352,21 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             material_parameters=solid_behavior_parameters,
             measure=self.dV,
             formulation="ener")
-        # self.add_foi(expr=operator.material.Sigma, fs=self.mfoi_fs, name="Sigma", update_type="project")
+        self.add_foi(expr=operator.material.Sigma, fs=self.mfoi_fs, name="Sigma", update_type="project")
+        # self.add_foi(expr=operator.material.Sigma_zz, fs=self.sfoi_fs, name="Sigma_zz", update_type="project")
+        # self.add_foi(expr=operator.material.p_hydro, fs=self.sfoi_fs, name="p_hydro", update_type="project")
+        # self.add_foi(expr=operator.material.Sigma_VM, fs=self.sfoi_fs, name="Sigma_VM", update_type="project")
         # self.add_foi(expr=operator.material.Sigma_old, fs=self.mfoi_fs, name="Sigma_old", update_type="project")
         self.add_foi(expr=operator.material.sigma, fs=self.mfoi_fs, name="sigma", update_type="project")
+        # self.add_foi(
+        #         # expr= - ((sum((operator.material.Sigma*self.kinematics.C)[i, i] for i in range(self.dim)))/3/self.kinematics.J)/self.V0,
+        #         expr= self.get_displacement_perturbation_function_space().collapse(), 
+        #         fs=self.mfoi_fs,
+        #         name="p_hydrostatic",
+        #         update_type="project")
+        # # Sigma_zz = dolfin.assemble((Chom_21 * (self.U_tot[0] + self.U_tot[1]))*self.dV)
+        # # p_hydro = - dolfin.assemble(((sum((operator.material.Sigma*self.kinematics.C)[i, i] for i in range(self.dim)) + Sigma_zz)/3/self.kinematics.J)*self.dV)/self.V0
+
         return self.add_operator(operator)
 
 
@@ -445,19 +427,6 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
 
 
-    # def add_macroscopic_stress_lagrange_multiplier_component_penalty_operator(self,
-    #         k_step=None,
-    #         **kwargs):
-
-    #     operator = dmech.LagrangeMultiplierComponentPenaltyOperator(
-    #         lambda_bar=self.get_macroscopic_stress_lagrange_multiplier_subsol().subfunc,
-    #         lambda_bar_test=self.get_macroscopic_stress_lagrange_multiplier_subsol().dsubtest,
-    #         measure=self.dV,
-    #         **kwargs)
-    #     return self.add_operator(operator, k_step=k_step)
-
-
-
     def add_surface_pressure_loading_operator(self,
             k_step=None,
             **kwargs):
@@ -471,6 +440,23 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
 
 
+    def add_surface_tension_loading_operator_legend(self,
+            k_step=None,
+            **kwargs):
+
+        operator = dmech.SurfaceTensionLoadingOperatorTimeDependent(
+            Gamma_history = self.Gamma_history,
+            qois=self.qois,
+            U=self.get_displacement_perturbation_subsol().subfunc,
+            U_test=self.get_displacement_perturbation_subsol().dsubtest,
+            kinematics=self.kinematics,
+            N=self.mesh_normals,
+            dS=self.dS,
+            **kwargs)
+        return self.add_operator(operator=operator, k_step=k_step)
+    
+
+
     def add_surface_tension_loading_operator_1(self,
             k_step=None,
             **kwargs):
@@ -478,6 +464,19 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
         operator = dmech.SurfaceTensionLoadingOperator(
             U=self.get_displacement_perturbation_subsol().subfunc,
             U_test=self.get_displacement_perturbation_subsol().dsubtest,
+            kinematics=self.kinematics,
+            N=self.mesh_normals,
+            **kwargs)
+        return self.add_operator(operator=operator, k_step=k_step)
+
+
+    def add_surface_tension_loading_operator(self,
+            k_step=None,
+            **kwargs):
+
+        operator = dmech.SurfaceTension0LoadingOperator(
+            u=self.get_displacement_perturbation_subsol().subfunc,
+            u_test=self.get_displacement_perturbation_subsol().dsubtest,
             kinematics=self.kinematics,
             N=self.mesh_normals,
             **kwargs)
@@ -644,8 +643,14 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
     def add_deformed_solid_volume_qoi(self):
         self.add_qoi(
-            name="vs",
+            name="vs_old",
             expr=self.kinematics.J * self.dV)
+        
+    
+    def add_deformed_solid_volume_old_qoi(self):
+        self.add_qoi(
+            name="vs",
+            expr=self.kinematics.J_old * self.dV)
 
 
 
@@ -667,6 +672,28 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
                 expr=sum([expr * self.dS(id) for id in ids]))
 
 
+    def add_interfacial_surface_qois(self,
+                                measure):
+            self.measure=measure
+            expr=dolfin.sqrt(dolfin.dot(dolfin.inv(self.kinematics.F.T), self.mesh_normals)[1]**2+ dolfin.dot(dolfin.inv(self.kinematics.F.T), self.mesh_normals)[0]**2)*self.kinematics.J
+            self.add_qoi(
+                name="S",
+                # update_type="direct",
+                # expr=1)
+                expr=expr*self.dS(0))
+            
+
+    def add_interfacial_surface_old_qois(self,
+                                measure):
+            self.measure=measure
+            expr=dolfin.sqrt(dolfin.dot(dolfin.inv(self.kinematics.F_old.T), self.mesh_normals)[1]**2+ dolfin.dot(dolfin.inv(self.kinematics.F_old.T), self.mesh_normals)[0]**2)*self.kinematics.J_old
+            self.add_qoi(
+                name="S_old",
+                # update_type="direct",
+                # expr=1)
+                expr=expr*self.dS(0),
+                divide_by_dt=True)
+        
 
     def add_macroscopic_stress_component_qois(self,i,j):
         for operator in self.operators: # MG20221110: Warning! Only works if there is a single operator with a material law!!
@@ -779,3 +806,4 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             name="p_f",
             expr=P_fin,
             update_type="scalar")
+        

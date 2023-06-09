@@ -32,7 +32,7 @@ class SurfaceTensionLoadingOperator(Operator):
         gamma = self.tv_gamma.val
 
         # self.tv_gamma.surface_change_rate(kinematics, dt)
-        print("gamma =" +str(gamma))
+        # print("gamma =" +str(gamma))
         FmTN = dolfin.dot(dolfin.inv(kinematics.F).T, N)
         T = dolfin.sqrt(dolfin.inner(FmTN, FmTN))
         Pi = gamma * T * kinematics.J * self.measure
@@ -49,8 +49,8 @@ class SurfaceTensionLoadingOperator(Operator):
             t_step):
 
         self.tv_gamma.set_value_at_t_step(t_step)
-        print("t_step =" +str(t_step))
-        print("value at t_step = " +str(self.tv_gamma.set_value_at_t_step(t_step)))
+        # print("t_step =" +str(t_step))
+        # print("value at t_step = " +str(self.tv_gamma.set_value_at_t_step(t_step)))
 
     def returne_surface_rate(self):
         self.tv_gamma.surface_change_rate()

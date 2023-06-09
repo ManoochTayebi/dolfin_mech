@@ -26,7 +26,7 @@ class CiarletGeymonatNeoHookeanElasticMaterial(ElasticMaterial):
 
         self.kinematics = kinematics
 
-        self.bulk = dmech.CiarletGeymonatElasticMaterial(kinematics, parameters)
+        self.bulk = dmech.CiarletGeymonatElasticMaterial(kinematics, parameters, decoup)
         self.dev  = dmech.NeoHookeanElasticMaterial(kinematics, parameters, decoup)
 
         self.Psi   = self.bulk.Psi   + self.dev.Psi
@@ -35,6 +35,17 @@ class CiarletGeymonatNeoHookeanElasticMaterial(ElasticMaterial):
         self.P     = self.bulk.P     + self.dev.P
         self.sigma = self.bulk.sigma + self.dev.sigma
         self.sigma_old = self.bulk.sigma_old + self.dev.sigma_old
+
+        self.Sigma_zz = self.bulk.Sigma_zz + self.dev.Sigma_zz
+
+        # self.p_hydro = -(sum((self.Sigma*self.kinematics.C)[i, i] for i in range(self.kinematics.dim))+ self.Sigma_zz)/3/self.kinematics.J
+        self.p_hydro = -(dolfin.tr(self.Sigma.T*self.kinematics.C)+ self.Sigma_zz)/3/self.kinematics.J
+
+        # self.Sigma_dev = self.Sigma - self.p_hydro * self.kinematics.I
+        self.Sigma_dev = self.Sigma + self.p_hydro * self.kinematics.J * self.kinematics.C_inv
+
+        # self.Sigma_VM = dolfin.sqrt(1.5 *  (sum((self.Sigma_dev.T*self.Sigma_dev)[i, i] for i in range(self.kinematics.dim))))
+        self.Sigma_VM = dolfin.sqrt(1.5 *dolfin.tr(self.Sigma_dev.T*self.Sigma_dev))
 
 
 

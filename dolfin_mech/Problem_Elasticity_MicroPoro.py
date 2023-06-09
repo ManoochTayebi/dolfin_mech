@@ -360,15 +360,13 @@ class MicroPoroElasticityProblem(Problem):
 
     def set_kinematics(self):
 
-        self.kinematics = dmech.LinearizedKinematics(
+        self.kinematics = dmech.Kinematics(
             U=self.U_tot,
             U_old=self.U_tot_old)
 
-        self.add_foi(expr=self.kinematics.F, fs=self.mfoi_fs, name="F_tot", update_type="project")
+
         self.add_foi(expr=self.kinematics.J, fs=self.sfoi_fs, name="J_tot", update_type="project")
-        self.add_foi(expr=self.kinematics.C, fs=self.mfoi_fs, name="C_tot", update_type="project")
         self.add_foi(expr=self.kinematics.E, fs=self.mfoi_fs, name="E_tot", update_type="project")
-        self.add_foi(expr=self.kinematics.E_old, fs=self.mfoi_fs, name="E_tot_old", update_type="project")
 
 
 
@@ -376,26 +374,24 @@ class MicroPoroElasticityProblem(Problem):
             solid_behavior_model,
             solid_behavior_parameters):
 
-        operator = dmech.LinearizedElasticityOperator(
-            u_test=self.get_macroscopic_stretch_subsol().dsubtest,
+        # operator = dmech.LinearizedElasticityOperator(
+        #     u_test=self.get_macroscopic_stretch_subsol().dsubtest,
+        #     kinematics=self.kinematics,
+        #     material_model=solid_behavior_model,
+        #     material_parameters=solid_behavior_parameters,
+        #     measure=self.dV)
+        operator = dmech.HyperElasticityOperator(
             U=self.sol_func,
             U_test=self.dsol_test,
             kinematics=self.kinematics,
             material_model=solid_behavior_model,
             material_parameters=solid_behavior_parameters,
-            measure=self.dV)
-        # operator = dmech.HyperElasticityOperator(
-        #     U=self.sol_func,
-        #     U_test=self.dsol_test,
-        #     kinematics=self.kinematics,
-        #     material_model=solid_behavior_model,
-        #     material_parameters=solid_behavior_parameters,
-        #     measure=self.dV,
-        #     formulation="ener")
-        self.add_foi(expr=operator.material.Sigma, fs=self.mfoi_fs, name="Sigma", update_type="project")
-        # self.add_foi(expr=operator.material.Sigma_old, fs=self.mfoi_fs, name="Sigma_old", update_type="project")
-        self.add_foi(expr=operator.material.sigma, fs=self.mfoi_fs, name="sigma", update_type="project")
-        return self.add_operator(operator)
+            measure=self.dV,
+            formulation="ener")
+        # self.add_foi(expr=operator.material.Sigma, fs=self.mfoi_fs, name="Sigma", update_type="project")
+        # # self.add_foi(expr=operator.material.Sigma_old, fs=self.mfoi_fs, name="Sigma_old", update_type="project")
+        # self.add_foi(expr=operator.material.sigma, fs=self.mfoi_fs, name="sigma", update_type="project")
+        # return self.add_operator(operator)
 
 
 

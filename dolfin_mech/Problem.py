@@ -452,7 +452,8 @@ class Problem():
 
 
 
-    def update_qois(self, dt=None, t_step=None, dS=None):
+    # def update_qois(self, dt=None, t_step=None, dS=None):
+    def update_qois(self, dt=None, t_step=None):
 
         for qoi in self.qois:
             qoi.update(dt, t_step, self.kinematics, self.dV, self.dS)
@@ -652,12 +653,12 @@ class Problem():
 ###################################################################### steps ###
 
     def add_step(self,
-            Deltat=1.,
+            Deltat=1,
             **kwargs):
 
         if len(self.steps) == 0:
             t_ini = 0.
-            t_fin = Deltat
+            t_fin = 1
         else:
             t_ini = self.steps[-1].t_fin
             t_fin = t_ini + Deltat

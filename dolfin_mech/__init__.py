@@ -44,6 +44,7 @@ from .Operator_Loading_SurfaceForce import *
 from .Operator_Loading_SurfacePressure import *
 from .Operator_Loading_SurfacePressureGradient import *
 from .Operator_Loading_SurfaceTension import *
+from .Operator_Loading_SurfaceTension_TimeDependent import *
 from .Operator_Loading_VolumeForce import *
 from .Operator_MicroPoro_DeformedFluidVolume import *
 from .Operator_MicroPoro_DeformedSolidVolume import *

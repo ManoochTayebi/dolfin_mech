@@ -71,12 +71,13 @@ class PeriodicSubDomain(dolfin.SubDomain):
             assert (0),\
                 "dim must be 2 or 3. Aborting."
 
-        self.vv = vertices
-        self.a1 = self.vv[1,:]-self.vv[0,:] # first vector generating periodicity
-        self.a2 = self.vv[3,:]-self.vv[0,:] # second vector generating periodicity
-        # check if UC vertices form indeed a parallelogram
-        assert np.linalg.norm(self.vv[2,:] - self.vv[3,:] - self.a1) <= self.tol
-        assert np.linalg.norm(self.vv[2,:] - self.vv[1,:] - self.a2) <= self.tol
+        if (vertices is not None):
+            self.vv = vertices
+            self.a1 = self.vv[1,:]-self.vv[0,:] # first vector generating periodicity
+            self.a2 = self.vv[3,:]-self.vv[0,:] # second vector generating periodicity
+            # check if UC vertices form indeed a parallelogram
+            assert np.linalg.norm(self.vv[2,:] - self.vv[3,:] - self.a1) <= self.tol
+            assert np.linalg.norm(self.vv[2,:] - self.vv[1,:] - self.a2) <= self.tol
 
 
 

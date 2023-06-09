@@ -40,7 +40,7 @@ class HomogenizedParameters():
         self.vol=vol
 
         self.bbox=bbox
-        print ("self.vol:", self.vol)
+        # print ("self.vol:", self.vol)
 
 
     
@@ -109,10 +109,11 @@ class HomogenizedParameters():
         if (self.dim==3): Enum=enumerate(["Exx", "Eyy", "Ezz", "Eyz", "Exz", "Exy"])
 
         for (j, case) in Enum:
-            print("Solving {} case...".format(case))
+            # print("Solving {} case...".format(case))
             macro_strain = self.get_macro_strain(j)
             Eps.assign(dolfin.Constant(macro_strain))
-            dolfin.solve(a == L, w, [], solver_parameters={"linear_solver": "cg"})
+            # dolfin.solve(a == L, w, [], solver_parameters={"linear_solver": "cg"})
+            dolfin.solve(a == L, w, [], solver_parameters={"linear_solver": "lu"})
             (v, lamb) = dolfin.split(w)
             # xdmf_file_per.write(w, float(j))
 
@@ -130,9 +131,13 @@ class HomogenizedParameters():
         
         lmbda_hom = Chom[0, 1]
         if (self.dim==2): mu_hom = Chom[2, 2]
-        if (self.dim==3): mu_hom = Chom[3, 3]
+        if (self.dim==3): mu_hom = Chom[4, 4]
 
         # print(Chom[0, 0], lmbda_hom + 2*mu_hom)
+        print('Chom:' +str(Chom))
+
+        print("lmbda_hom: " +str(lmbda_hom))
+        print("mu_hom: " +str(mu_hom))
 
         E_hom = mu_hom*(3*lmbda_hom + 2*mu_hom)/(lmbda_hom + mu_hom)
         nu_hom = lmbda_hom/(lmbda_hom + mu_hom)/2
@@ -145,6 +150,8 @@ class HomogenizedParameters():
         self.E_hom = E_hom
         self.nu_hom = nu_hom 
         return lmbda_hom, mu_hom
+
+
 
 
     def kappa_tilde(self):
@@ -174,6 +181,7 @@ class HomogenizedParameters():
         xmax = self.bbox[1]
         ymin = self.bbox[2]
         ymax = self.bbox[3]
+        if (dim==3): zmin = self.bbox[4], zmax = self.bbox[5]
 
         tol = 1E-8
         vv = self.vertices
@@ -184,46 +192,62 @@ class HomogenizedParameters():
 
         ################################################## Subdomains & Measures ###
 
-        class BoundaryX0(dolfin.SubDomain):
-            def inside(self,x,on_boundary):
-                # return on_boundary and dolfin.near(x[0],xmin,tol)
-                return on_boundary and dolfin.near(x[0],vv[0,0] + x[1]*a2[0]/vv[3,1],tol)
+        # class BoundaryX0(dolfin.SubDomain):
+        #     def inside(self,x,on_boundary):
+        #         # return on_boundary and dolfin.near(x[0],xmin,tol)
+        #         return on_boundary and dolfin.near(x[0],vv[0,0] + x[1]*a2[0]/vv[3,1],tol)
 
-        class BoundaryY0(dolfin.SubDomain):
-            def inside(self,x,on_boundary):
-                return on_boundary and dolfin.near(x[1],ymin,tol)
+        # class BoundaryY0(dolfin.SubDomain):
+        #     def inside(self,x,on_boundary):
+        #         return on_boundary and dolfin.near(x[1],ymin,tol)
 
-        class BoundaryX1(dolfin.SubDomain):
-            def inside(self,x,on_boundary):
-                # return on_boundary and dolfin.near(x[0],xmax,tol)
-                return on_boundary and dolfin.near(x[0],vv[1,0] + x[1]*a2[0]/vv[3,1],tol)
+        # class BoundaryX1(dolfin.SubDomain):
+        #     def inside(self,x,on_boundary):
+        #         # return on_boundary and dolfin.near(x[0],xmax,tol)
+        #         return on_boundary and dolfin.near(x[0],vv[1,0] + x[1]*a2[0]/vv[3,1],tol)
 
-        class BoundaryY1(dolfin.SubDomain):
-            def inside(self,x,on_boundary):
-                return on_boundary and dolfin.near(x[1],ymax,tol)
+        # class BoundaryY1(dolfin.SubDomain):
+        #     def inside(self,x,on_boundary):
+        #         return on_boundary and dolfin.near(x[1],ymax,tol)
 
-        boundaries_mf = dolfin.MeshFunction("size_t", self.mesh, self.mesh.topology().dim() - 1)
+        # boundaries_mf = dolfin.MeshFunction("size_t", self.mesh, self.mesh.topology().dim() - 1)
+        # boundaries_mf.set_all(0)
+
+        # # bsup = BoundaryHigher()
+        # bX0 = BoundaryX0()
+        # bY0 = BoundaryY0()
+        # bX1 = BoundaryX1()
+        # bY1 = BoundaryY1()
+
+        # # bsup.mark(boundary_markers, 8)
+        # bX0.mark(boundaries_mf, 1)
+        # bY0.mark(boundaries_mf, 2)
+        # bX1.mark(boundaries_mf, 3)
+        # bY1.mark(boundaries_mf, 4)
+
+        xmin_sd = dolfin.CompiledSubDomain("near(x[0], x0, tol) && on_boundary", x0=xmin, tol=tol)
+        xmax_sd = dolfin.CompiledSubDomain("near(x[0], x0, tol) && on_boundary", x0=xmax, tol=tol)
+        ymin_sd = dolfin.CompiledSubDomain("near(x[1], x0, tol) && on_boundary", x0=ymin, tol=tol)
+        ymax_sd = dolfin.CompiledSubDomain("near(x[1], x0, tol) && on_boundary", x0=ymax, tol=tol)
+        if (dim==3): zmin_sd = dolfin.CompiledSubDomain("near(x[2], x0, tol) && on_boundary", x0=zmin, tol=tol)
+        if (dim==3): zmax_sd = dolfin.CompiledSubDomain("near(x[2], x0, tol) && on_boundary", x0=zmax, tol=tol)
+
+
+        xmin_id = 1
+        xmax_id = 2
+        ymin_id = 3
+        ymax_id = 4
+        if (dim==3): zmin_id = 5
+        if (dim==3): zmax_id = 6
+
+        boundaries_mf = dolfin.MeshFunction("size_t", self.mesh, self.mesh.topology().dim()-1) # MG20180418: size_t looks like unisgned int, but more robust wrt architecture and os
         boundaries_mf.set_all(0)
-
-        # bsup = BoundaryHigher()
-        bX0 = BoundaryX0()
-        bY0 = BoundaryY0()
-        bX1 = BoundaryX1()
-        bY1 = BoundaryY1()
-
-        # bsup.mark(boundary_markers, 8)
-        bX0.mark(boundaries_mf, 1)
-        bY0.mark(boundaries_mf, 2)
-        bX1.mark(boundaries_mf, 3)
-        bY1.mark(boundaries_mf, 4)
 
         ################################################################ Problem ###
 
-        problem = dmech.MicroPoroElasticityProblem(
-                pf=p_f,
+        problem = dmech.MicroPoroHyperelasticityProblem(
                 mesh=self.mesh,
                 mesh_bbox=self.bbox,
-                bbox_V0=self.vol,
                 vertices=self.vertices,
                 boundaries_mf=boundaries_mf,
                 displacement_perturbation_degree=2,
@@ -243,10 +267,10 @@ class HomogenizedParameters():
             dt_min=dt_min,
             dt_max=dt_max)
 
-        sigma_bar_00 = None
-        sigma_bar_01 = None
-        sigma_bar_10 = None
-        sigma_bar_11 = None
+        sigma_bar_00 = 0.
+        sigma_bar_01 = 0.
+        sigma_bar_10 = 0.
+        sigma_bar_11 = 0.
         sigma_bar = [[sigma_bar_00, sigma_bar_01],
                     [sigma_bar_10, sigma_bar_11]]
         load_type = load_params.get("type", "internal_pressure")
@@ -256,42 +280,32 @@ class HomogenizedParameters():
             measure=problem.dS(0),
             P_ini=0., P_fin=pf,
             k_step=k_step)
-        # # elif (load_type == "macroscopic_stretch"):
-        problem.add_macroscopic_stretch_component_penalty_operator(
-            comp_i=0, comp_j=0,
-            comp_ini=0.0, comp_fin=0,
-            pen_val=1e6,
-            k_step=k_step)
-        problem.add_macroscopic_stretch_component_penalty_operator(
-            comp_i=1, comp_j=1,
-            comp_ini=0.0, comp_fin=0,
-            pen_val=1e6,
-            k_step=k_step)
-        problem.add_macroscopic_stretch_component_penalty_operator(
-            comp_i=0, comp_j=1,
-            comp_ini=0.0, comp_fin=0.0,
-            pen_val=1e6,
-            k_step=k_step)
-        # elif (load_type == "macroscopic_stress"):
-        # gamma = load_params.get("gamma", 0.004)
-        # problem.add_surface_tension_loading_operator_1(
-        #     measure=problem.dS,
-        #     gamma_ini=0, gamma_fin=gamma,
-        #     k_step=k_step)
 
         for k in range(dim):
             for l in range (dim):
-                if sigma_bar[k][l] is None:
-                    problem.add_macroscopic_stress_lagrange_multiplier_component_penalty_operator(
-                        i=k, j=l,
-                        pen_val=1e6,
-                        k_step=k_step)
-                else:
+                if (sigma_bar[k][l] is not None):
                     problem.add_macroscopic_stress_component_constraint_operator(
                         i=k, j=l,
                         sigma_bar_ij_ini=0.0, sigma_bar_ij_fin=sigma_bar[k][l],
                         pf_ini=0.0, pf_fin=pf,
                         k_step=k_step)
+        # # elif (load_type == "macroscopic_stretch"):
+        problem.add_macroscopic_stretch_component_penalty_operator(
+            i=0, j=0,
+            U_bar_ij_ini=0.0, U_bar_ij_fin=0,
+            pen_val=1e6,
+            k_step=k_step)
+        problem.add_macroscopic_stretch_component_penalty_operator(
+            i=1, j=1,
+            U_bar_ij_ini=0.0, U_bar_ij_fin=0,
+            pen_val=1e6,
+            k_step=k_step)
+        problem.add_macroscopic_stretch_component_penalty_operator(
+            i=0, j=1,
+            U_bar_ij_ini=0.0, U_bar_ij_fin=0.0,
+            pen_val=1e6,
+            k_step=k_step)
+ 
 
         ################################################################# Solver ###
 
@@ -324,14 +338,15 @@ class HomogenizedParameters():
         integrator.close()
         Vs0 = problem.mesh_V0
         vs = dolfin.assemble(problem.kinematics.J * problem.dV)
-        V0 = problem.bbox_V0
-        print("vs: "+str(vs))
-        print("Vs0: "+str(Vs0))
+        V0 = self.vol
+        # print("vs: "+str(vs))
+        # print("Vs0: "+str(Vs0))
         Phi_s0 = Vs0/V0
         Phi_s = vs/V0
 
-        kappa_tilde = Phi_s0**2/(Phi_s0 - Phi_s)/4 * p_f
+        # kappa_tilde = Phi_s0**2 * p_f/(Phi_s0 - Phi_s)
+        kappa_tilde = Phi_s0**2 * p_f/(Phi_s0 - Phi_s)/2
 
-        print("kappa_tilde: " +str(kappa_tilde))
+        # print("kappa_tilde: " +str(kappa_tilde))
 
         return kappa_tilde

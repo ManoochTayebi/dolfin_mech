@@ -169,7 +169,7 @@ class TimeIntegrator():
 
                 for operator in self.step.operators:
                     operator.set_value_at_t_step(t_step)
-                    operator.set_dt(dt)
+                    operator.set_dt(t_step, dt)
 
                 for constraint in self.step.constraints:
                     constraint.set_value_at_t_step(t_step)
@@ -183,6 +183,7 @@ class TimeIntegrator():
                         self.problem.get_subsols_func_old_lst(),
                         self.problem.sol_old_func)
                 solver_success, n_iter = self.solver.solve(k_step, k_t, dt, t)
+                # print("n_iter: "+str(n_iter))
 
                 self.table_printer.write_line([k_step, k_t, dt, t, t_step, n_iter, solver_success])
 
@@ -201,12 +202,11 @@ class TimeIntegrator():
 
                         if (self.write_xmls):
                             dolfin.File(self.write_sol_filebasename+"_"+str(k_t_tot).zfill(3)+".xml") << self.problem.get_displacement_subsol().subfunc
-
+                    dS = self.problem.dS
                     if (self.write_qois):
                         self.problem.update_qois(dt, t_step)
                         self.qoi_printer.write_line([t]+[qoi.value for qoi in self.problem.qois])
                         # print([self.problem.qois[0].name])
-                        # print([self.problem.qois[0].value])
                         # print([self.problem.qois[0].value])
 
                     if dolfin.near(t, self.step.t_fin, eps=1e-9):

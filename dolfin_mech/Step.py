@@ -20,7 +20,7 @@ class Step():
 
     def __init__(self,
             t_ini=0.,
-            t_fin=1.,
+            t_fin=None,
             dt_ini=None,
             dt_min=None,
             dt_max=None,
