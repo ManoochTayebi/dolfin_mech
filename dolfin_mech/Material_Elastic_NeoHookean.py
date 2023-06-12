@@ -2,7 +2,7 @@
 
 ################################################################################
 ###                                                                          ###
-### Created by Martin Genet, 2018-2022                                       ###
+### Created by Martin Genet, 2018-2023                                       ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
@@ -30,32 +30,15 @@ class NeoHookeanElasticMaterial(ElasticMaterial):
 
         if (decoup):
             if   (self.kinematics.dim == 2):
-                self.Psi   = self.C1 * (self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3)  # Mahdi
-                self.Psi_old   = self.C1 * ( self.kinematics.J_old**(-2/3) * (1 + self.kinematics.IC_old) - 3)  # Mahdi
-                self.Sigma = 2*self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv*(1 + self.kinematics.IC))   # Mahdi
-                self.Sigma_old = 2*self.C1 * self.kinematics.J_old**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv_old*(1 + self.kinematics.IC_old))     # Mahdi
-
-                # self.Sigma_zz = 2*self.C1 * (1 - (1 + self.kinematics.IC)/3)
-                self.Sigma_zz = 2*self.C1 * self.kinematics.J**(-2/3) * (1 - (1 + self.kinematics.IC)/3)
-
-                # assert (0), "ToDo. Aborting."
+                self.Psi   = self.C1 * (self.kinematics.IC_bar + self.kinematics.J**(-2/3) - 3)  # MG20200206: Plane strain
+                assert (0), "ToDo. Aborting."
             elif (self.kinematics.dim == 3):
                 self.Psi   = self.C1 * (self.kinematics.IC_bar - 3)
-                self.Psi_old   = self.C1 * (self.kinematics.IC_bar_old - 3)
-                self.Sigma = 2*self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3 *self.kinematics.IC*self.kinematics.C_inv)
-                self.Sigma_old  = 2*self.C1 * self.kinematics.J_old **(-2/3) *(self.kinematics.I - 1/3 *self.kinematics.IC_old *self.kinematics.C_inv_old )
-                # self.Sigma = dolfin.diff(self.Psi, self.kinematics.C)
-                # self.Sigma_old = dolfin.diff(self.Psi_old, self.kinematics.C_old)
+                self.Sigma = dolfin.diff(self.Psi, self.kinematics.C)
         else:
             if   (self.kinematics.dim == 2):
                 self.Psi   =   self.C1 * (self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J)) # MG20200206: Plane strain
                 self.Sigma = 2*self.C1 * (self.kinematics.I - self.kinematics.C_inv) # MG20200206: Cannot differentiate Psi wrt to C because J is not defined as a function of C
-
-                self.Sigma_zz = dolfin.Constant(0)
-
-                self.Psi_old   =   self.C1 * (self.kinematics.IC_old - 2 - 2*dolfin.ln(self.kinematics.J_old)) # Mahdi
-                self.Sigma_old = 2*self.C1 * (self.kinematics.I - self.kinematics.C_inv_old) # Mahdi
-
             elif (self.kinematics.dim == 3):
                 self.Psi   =   self.C1 * (self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))
                 self.Sigma = 2*self.C1 * (self.kinematics.I - self.kinematics.C_inv) # MG20200206: Cannot differentiate Psi wrt to C because J is not defined as a function of C

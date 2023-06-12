@@ -2,7 +2,7 @@
 
 ################################################################################
 ###                                                                          ###
-### Created by Martin Genet, 2018-2022                                       ###
+### Created by Martin Genet, 2018-2023                                       ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
@@ -241,6 +241,7 @@ def RivlinCube_Hyperelasticity(
     problem.add_global_strain_qois()
     problem.add_global_stress_qois()
     if (incomp): problem.add_global_pressure_qoi()
+    if (inverse==0) and (dim==2): problem.add_global_out_of_plane_stress_qois()
 
     ################################################################# Solver ###
 
