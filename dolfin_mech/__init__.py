@@ -11,7 +11,6 @@ from .HallowBox_Homogenization import *
 from .HallowBox_Mesh import *
 from .HeartSlice_Hyperelasticity import *
 from .HeartSlice_Mesh import *
-from .Homogenization import *
 from .Kinematics import *
 from .Kinematics_Inverse import *
 from .Kinematics_Linearized import *
