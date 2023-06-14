@@ -7,12 +7,15 @@ from .Disc_Hyperelasticity import *
 from .Disc_Mesh import *
 from .Expression_MeshFunction_cpp import *
 from .FOI import *
+from .HallowBox_Homogenization import *
+from .HallowBox_Mesh import *
 from .HeartSlice_Hyperelasticity import *
 from .HeartSlice_Mesh import *
 from .Homogenization import *
 from .Kinematics import *
 from .Kinematics_Inverse import *
 from .Kinematics_Linearized import *
+from .Linear_Homogenization import *
 from .Loading import *
 from .Material import *
 from .Material_Elastic import *

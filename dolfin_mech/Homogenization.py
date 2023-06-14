@@ -254,6 +254,17 @@ class HomogenizedParameters():
                 quadrature_degree=3,
                 solid_behavior=mat_params,
                 bcs=bcs)
+        # problem = dmech.ElasticityProblem(
+        #         mesh=self.mesh,
+        #         domains_mf=None,
+        #         define_facet_normals=1,
+        #         boundaries_mf=boundaries_mf,
+        #         displacement_degree=1,
+        #         quadrature_degree="default",
+        #         w_incompressibility=0,
+        #         elastic_behavior=mat_params,
+        #         elastic_behaviors=None,
+        #         mesh_bbox=self.bbox)
 
         ################################################################ Loading ###
 
@@ -289,7 +300,7 @@ class HomogenizedParameters():
                         sigma_bar_ij_ini=0.0, sigma_bar_ij_fin=sigma_bar[k][l],
                         pf_ini=0.0, pf_fin=pf,
                         k_step=k_step)
-        # # elif (load_type == "macroscopic_stretch"):
+        # elif (load_type == "macroscopic_stretch"):
         problem.add_macroscopic_stretch_component_penalty_operator(
             i=0, j=0,
             U_bar_ij_ini=0.0, U_bar_ij_fin=0,
@@ -300,11 +311,11 @@ class HomogenizedParameters():
             U_bar_ij_ini=0.0, U_bar_ij_fin=0,
             pen_val=1e6,
             k_step=k_step)
-        problem.add_macroscopic_stretch_component_penalty_operator(
-            i=0, j=1,
-            U_bar_ij_ini=0.0, U_bar_ij_fin=0.0,
-            pen_val=1e6,
-            k_step=k_step)
+        # problem.add_macroscopic_stretch_component_penalty_operator(
+        #     i=0, j=1,
+        #     U_bar_ij_ini=0.0, U_bar_ij_fin=0.0,
+        #     pen_val=1e6,
+        #     k_step=k_step)
  
 
         ################################################################# Solver ###
