@@ -54,5 +54,5 @@ for dim in dim_lst:
             res_basename=res_folder+"/"+res_basename,
             verbose=1)
 
-        # test.test(res_basename)
+        test.test(res_basename)
 
