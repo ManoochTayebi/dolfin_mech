@@ -48,6 +48,7 @@ from .Operator_Loading_SurfaceTension import *
 from .Operator_Loading_VolumeForce import *
 from .Operator_MacroscopicStress import *
 from .Operator_Penalty_DirectionalDisplacement import *
+from .Operator_Penalty_MacroscopicStressComponent import *
 from .Operator_Penalty_MacroscopicStretchComponent import *
 from .Operator_Penalty_MacroscopicStretchSymmetry import *
 from .Operator_Penalty_NormalDisplacement import *
