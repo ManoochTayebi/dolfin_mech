@@ -28,7 +28,7 @@ test = mypy.Test(
     res_folder=res_folder,
     perform_tests=1,
     stop_at_failure=1,
-    clean_after_tests=0,
+    clean_after_tests=1,
     tester_numpy_tolerance=2*1e-2)
 
 dim_lst  = []
