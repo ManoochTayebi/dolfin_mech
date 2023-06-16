@@ -2,9 +2,15 @@
 
 ################################################################################
 ###                                                                          ###
-### Created by Mahdi Manoochehrtayebi & Martin Genet, 2020-2023              ###
+### And Mahdi Manoochehrtayebi, 2021-2023                                    ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
+###                                                                          ###
+###                                                                          ###
+### Created by Martin Genet, 2018-2023                                       ###
+###                                                                          ###
+### École Polytechnique, Palaiseau, France                                   ###
+###                                                                          ###
 ###                                                                          ###
 ################################################################################
 
@@ -14,7 +20,7 @@ import meshio
 
 ################################################################################
 
-def HallowBox_Mesh(
+def HollowBox_Mesh(
         res_basename,
         mesh_params={}):
 

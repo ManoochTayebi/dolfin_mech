@@ -13,7 +13,7 @@ import myPythonLibrary as mypy
 
 ################################################################################
 
-def HallowBox_Homogenization(
+def HollowBox_Homogenization(
         res_basename,
         verbose,
         mesh_params={},
@@ -24,7 +24,7 @@ def HallowBox_Homogenization(
 
     ################################################################### Mesh ###
 
-    mesh = dmech.HallowBox_Mesh(
+    mesh = dmech.HollowBox_Mesh(
             res_basename=res_basename,
             mesh_params=mesh_params)
     

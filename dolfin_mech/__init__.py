@@ -7,8 +7,8 @@ from .Disc_Hyperelasticity import *
 from .Disc_Mesh import *
 from .Expression_MeshFunction_cpp import *
 from .FOI import *
-from .HallowBox_Homogenization import *
-from .HallowBox_Mesh import *
+from .HollowBox_Homogenization import *
+from .HollowBox_Mesh import *
 from .HeartSlice_Hyperelasticity import *
 from .HeartSlice_Mesh import *
 from .Kinematics import *

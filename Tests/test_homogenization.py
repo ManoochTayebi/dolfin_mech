@@ -2,12 +2,12 @@
 
 ################################################################################
 ###                                                                          ###
-### Created by Martin Genet, 2018-2022                                       ###
+### And Mahdi Manoochehrtayebi, 2021-2023                                    ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
 ###                                                                          ###
-### And Mahdi Manoochehrtayebi, 2021-2023                                    ###
+### Created by Martin Genet, 2018-2023                                       ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
@@ -48,7 +48,7 @@ for dim in dim_lst:
         res_basename += "-dim="+str(dim)
         res_basename += "-centering="+str(centering)
 
-        dmech.HallowBox_Homogenization(
+        dmech.HollowBox_Homogenization(
             mat_params={"E":1.0, "nu":0.3},
             mesh_params={"dim":dim, "centering":centering, "width":1, "r0":1/5},
             res_basename=res_folder+"/"+res_basename,
