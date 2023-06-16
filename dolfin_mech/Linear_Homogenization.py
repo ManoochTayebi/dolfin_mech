@@ -2,7 +2,7 @@
 
 ####################################################################################################################
 ###                                                                                                              ###
-### Created by Mahdi Manoocherhtayebi 2022-2023                                                                  ###
+### Created by Mahdi Manoocherhtayebi 2021-2023                                                                  ###
 ###                                                                                                              ###  
 ### Inspired by https://comet-fenics.readthedocs.io/en/latest/demo/periodic_homog_elas/periodic_homog_elas.html  ###
 ###                                                                                                              ###
@@ -16,9 +16,7 @@ import dolfin_mech as dmech
 
 # from __future__ import print_function
 import dolfin
-import numpy as np
-import math
-import sys
+import numpy
 
 ###################################################################################################################
 
@@ -61,20 +59,20 @@ class HomogenizationLinear():
 
     def Voigt2strain(self, s):
         if (self.dim==2):
-            strain_tensor = np.array([[s[0]   , s[2]/2.],
-                                      [s[2]/2., s[1]   ]])
+            strain_tensor = numpy.array([[s[0]   , s[2]/2.],
+                                         [s[2]/2., s[1]   ]])
         if (self.dim==3):
-            strain_tensor = np.array([[s[0]   , s[5]/2.,  s[4]/2],
-                                      [s[5]/2., s[1]   ,  s[3]/2],
-                                      [s[4]/2 , s[3]/2 ,  s[2]  ]])
+            strain_tensor = numpy.array([[s[0]   , s[5]/2.,  s[4]/2],
+                                         [s[5]/2., s[1]   ,  s[3]/2],
+                                         [s[4]/2 , s[3]/2 ,  s[2]  ]])
         return strain_tensor
 
     def get_macro_strain(self, i):
         """returns the macroscopic strain for the 3 elementary load cases"""
         if (self.dim==2):
-            Eps_Voigt = np.zeros(3)
+            Eps_Voigt = numpy.zeros(3)
         if (self.dim==3):
-            Eps_Voigt = np.zeros(6)
+            Eps_Voigt = numpy.zeros(6)
         Eps_Voigt[i] = 1
         return self.Voigt2strain(Eps_Voigt)
 
@@ -105,8 +103,8 @@ class HomogenizationLinear():
         a, L = dolfin.lhs(F), dolfin.rhs(F)
         a += dolfin.dot(lamb_,dv)*dx + dolfin.dot(dlamb,v_)*dx
 
-        if (self.dim==2): Chom = np.zeros((3, 3))
-        if (self.dim==3): Chom = np.zeros((6, 6))
+        if (self.dim==2): Chom = numpy.zeros((3, 3))
+        if (self.dim==3): Chom = numpy.zeros((6, 6))
 
         if (self.dim==2): Enum=enumerate(["Exx", "Eyy", "Exy"])
         if (self.dim==3): Enum=enumerate(["Exx", "Eyy", "Ezz", "Eyz", "Exz", "Exy"])
@@ -125,7 +123,7 @@ class HomogenizationLinear():
             if (self.dim==2): Sigma_len = 3
             if (self.dim==3): Sigma_len = 6
 
-            Sigma = np.zeros((Sigma_len,))
+            Sigma = numpy.zeros((Sigma_len,))
             
             # self.vol = dolfin.assemble(dolfin.Constant(1) * dx)
             for k in range(Sigma_len):
@@ -160,7 +158,7 @@ class HomogenizationLinear():
 
 
     def get_kappa(self):
-        p_f = 0.1
+        p_f = 1
 
         coord = self.mesh.coordinates()
         xmax = max(coord[:,0]); xmin = min(coord[:,0])
@@ -172,10 +170,10 @@ class HomogenizationLinear():
         if (self.dim==3):    
             vol = (xmax - xmin)*(ymax - ymin)*(zmax - zmin)
 
-        vertices = np.array([[xmin, ymin],
-                             [xmax, ymin],
-                             [xmax, ymax],
-                             [xmin, ymax]])
+        vertices = numpy.array([[xmin, ymin],
+                                [xmax, ymin],
+                                [xmax, ymax],
+                                [xmin, ymax]])
 
             
         tol = 1E-8
@@ -183,8 +181,8 @@ class HomogenizationLinear():
         a1 = vv[1,:]-vv[0,:] # first vector generating periodicity
         a2 = vv[3,:]-vv[0,:] # second vector generating periodicity
         # check if UC vertices form indeed a parallelogram
-        assert np.linalg.norm(vv[2, :]-vv[3, :] - a1) <= tol
-        assert np.linalg.norm(vv[2, :]-vv[1, :] - a2) <= tol
+        assert numpy.linalg.norm(vv[2, :]-vv[3, :] - a1) <= tol
+        assert numpy.linalg.norm(vv[2, :]-vv[1, :] - a2) <= tol
 
 
         ################################################## Subdomains & Measures ###
@@ -274,7 +272,7 @@ class HomogenizationLinear():
 
         ############################################################################ Kinematics ############################
         
-        macro_strain = np.zeros((self.dim, self.dim))
+        macro_strain = numpy.zeros((self.dim, self.dim))
 
         if (self.dim==2): Eps = dolfin.Constant(((0, 0), (0, 0)))
         if (self.dim==3): Eps = dolfin.Constant(((0, 0, 0), (0, 0, 0), (0, 0, 0)))
@@ -289,29 +287,23 @@ class HomogenizationLinear():
         u_bar   = dolfin.dot(Eps, X-X_0)
         u_tot = u_bar + v
 
-        # Kinematics
-        I = dolfin.Identity(self.dim)                   
-        F_ = I + dolfin.grad(u_tot)              
-        J  = dolfin.det(F_)
-
 
         ############################################################################# Problem ################################
         pf = dolfin.Constant(p_f)
         N = dolfin.FacetNormal(self.mesh)
-        T = dolfin.dot(-pf * N, dolfin.inv(F_))
 
-        F = dolfin.inner(sigma(dv, 0, Eps), eps(v_))*dV - dolfin.inner(T, v_) * J * dS(0)
+        F = dolfin.inner(sigma(dv, 0, Eps), eps(v_))*dV - dolfin.inner(-pf * N, v_) * dS(0)
 
         a, L = dolfin.lhs(F), dolfin.rhs(F)
         a += dolfin.dot(lamb_,dv)*dV + dolfin.dot(dlamb,v_)*dV
 
         if (self.dim==3):
-            dolfin.solve(a == L, w, [], solver_parameters={"linear_solver": "cg"})
+            dolfin.solve(a == L, w, [], solver_parameters={"linear_solver": "cg"}) 
         else:
-            dolfin.solve(a == L, w, [], solver_parameters={"linear_solver": "lu"})
+            dolfin.solve(a == L, w, [], solver_parameters={"linear_solver": "lu"})  #MMT20230616: "cg" solver doesn't work when material Poisson ratio nu=0.499, and "lu" doesn't work for 3D geometries
 
         Vs0 = mesh_V0
-        vs = dolfin.assemble(J*dV)
+        vs = dolfin.assemble((1 + dolfin.tr(eps(v)))*dV)
         V0 = vol
         Phi_s0 = Vs0/V0
         Phi_s = vs/V0

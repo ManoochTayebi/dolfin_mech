@@ -354,8 +354,8 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             formulation="ener")
         self.add_foi(expr=operator.material.Sigma, fs=self.mfoi_fs, name="Sigma", update_type="project")
         # self.add_foi(expr=operator.material.Sigma_zz, fs=self.sfoi_fs, name="Sigma_zz", update_type="project")
-        # self.add_foi(expr=operator.material.p_hydro, fs=self.sfoi_fs, name="p_hydro", update_type="project")
-        # self.add_foi(expr=operator.material.Sigma_VM, fs=self.sfoi_fs, name="Sigma_VM", update_type="project")
+        self.add_foi(expr=operator.material.p_hydro, fs=self.sfoi_fs, name="p_hydro", update_type="project")
+        self.add_foi(expr=operator.material.Sigma_VM, fs=self.sfoi_fs, name="Sigma_VM", update_type="project")
         # self.add_foi(expr=operator.material.Sigma_old, fs=self.mfoi_fs, name="Sigma_old", update_type="project")
         self.add_foi(expr=operator.material.sigma, fs=self.mfoi_fs, name="sigma", update_type="project")
         # self.add_foi(
