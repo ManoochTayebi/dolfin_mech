@@ -56,6 +56,7 @@ from .Operator_Poro_Pf import *
 from .Operator_Poro_Wbulk import *
 from .Operator_Poro_Wpore import *
 from .Operator_Poro_Wskel import *
+from .Operator_TensorSymmetry import *
 from .Problem import *
 from .Problem_Elasticity import *
 from .Problem_Hyperelasticity import *
