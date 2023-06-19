@@ -12,16 +12,13 @@
 ##############################################################################
 
 import dolfin
+import numpy
 
 import dolfin_mech as dmech
 
-# from __future__ import print_function
-import dolfin
-import numpy
-
 #############################################################################
 
-class HomogenizationLinear():
+class HomogenizationProblem():
 
 
 

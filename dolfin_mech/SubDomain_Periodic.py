@@ -2,7 +2,7 @@
 
 ################################################################################
 ###                                                                          ###
-### Created by Martin Genet, 2018-2022                                       ###
+### Created by Martin Genet, 2018-2023                                       ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
@@ -23,7 +23,7 @@
 ################################################################################
 
 import dolfin
-import numpy as np
+import numpy
 
 ################################################################################
 
@@ -55,10 +55,10 @@ class PeriodicSubDomain(dolfin.SubDomain):
             if (self.dim >= 3):
                 self.tol += (self.zmax - self.zmin)**2
             self.tol = (self.tol)**(1/2)
-            self.tol *= 1e-2
+            self.tol *= 1e-6
         else:
             self.tol = tol
-       
+
         dolfin.SubDomain.__init__(self, map_tol=self.tol)
 
         if (self.dim == 2):
@@ -73,7 +73,7 @@ class PeriodicSubDomain(dolfin.SubDomain):
 
     
         if (vertices is None):
-            vertices = np.array([[self.xmin, self.ymin],
+            vertices = numpy.array([[self.xmin, self.ymin],
                                  [self.xmax, self.ymin],
                                  [self.xmax, self.ymax],
                                  [self.xmin, self.ymax]])
@@ -82,8 +82,8 @@ class PeriodicSubDomain(dolfin.SubDomain):
         self.a1 = self.vv[1,:]-self.vv[0,:] # first vector generating periodicity
         self.a2 = self.vv[3,:]-self.vv[0,:] # second vector generating periodicity
         # check if UC vertices form indeed a parallelogram
-        assert np.linalg.norm(self.vv[2,:] - self.vv[3,:] - self.a1) <= self.tol
-        assert np.linalg.norm(self.vv[2,:] - self.vv[1,:] - self.a2) <= self.tol
+        assert numpy.linalg.norm(self.vv[2,:] - self.vv[3,:] - self.a1) <= self.tol
+        assert numpy.linalg.norm(self.vv[2,:] - self.vv[1,:] - self.a2) <= self.tol
 
 
 
