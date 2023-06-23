@@ -10,6 +10,7 @@
 
 import dolfin
 import math
+import pickle
 
 import dolfin_mech as dmech
 from .Operator import Operator
@@ -45,6 +46,7 @@ class SurfaceTensionLoadingOperatorTimeDependent(Operator):
         self.gamma_0 = gamma_0
         self.Gamma_hat = Gamma_hat
         self.m1 = m1
+        self.Gamma_history.append((self.k1*self.C*self.Gamma_hat)/(self.k2 + self.k1*self.C))
 
         self.tv_gamma = dmech.TimeVaryingConstant(
             val=gamma_val, val_ini=gamma_ini, val_fin=gamma_fin)
@@ -72,12 +74,18 @@ class SurfaceTensionLoadingOperatorTimeDependent(Operator):
         # Pi = gamma_t * T * kinematics.J * self.measure
         # self.res_form = dolfin.derivative(Pi, U, U_test)
 
-        dim = U.ufl_shape[0]
-        I = dolfin.Identity(dim)
-        Pi = gamma_t * (1 + dolfin.inner(
-            kinematics.E,
-            I - dolfin.outer(N,N))) * self.measure
-        self.res_form = dolfin.derivative(Pi, U, U_test) # MG20211220: Is that correct?!
+        # dim = U.ufl_shape[0]
+        # I = dolfin.Identity(dim)
+        # Pi = gamma_t * (1 + dolfin.inner(
+        #     kinematics.E,
+        #     I - dolfin.outer(N,N))) * self.measure
+        # self.res_form = dolfin.derivative(Pi, U, U_test) # MG20211220: Is that correct?!
+
+        FmTN = dolfin.dot(dolfin.inv(kinematics.F).T, N)
+        T = dolfin.sqrt(dolfin.inner(FmTN, FmTN))
+        Pi = gamma_t * T * kinematics.J * self.measure
+        self.res_form = dolfin.derivative(Pi, U, U_test)
+
 
         self.kinematics=kinematics
 
@@ -111,17 +119,45 @@ class SurfaceTensionLoadingOperatorTimeDependent(Operator):
         self.Gamma_dt.set_value(dS_dt)
         self.S_t.set_value(S)
         
+        # t0 = t_step - dt
+        # a = self.k1*self.C + self.k2/S + dS_dt/S
+        # b = self.k1 * self.C * self.Gamma_hat
+        # # A = (self.Gamma_history[-1] - b/a) * math.e**(-a*t0)
+        # A = (self.Gamma_history[-1] - b/a)
 
-        t0 = t_step - dt
-        a = self.k1*self.C + self.k2/S + dS_dt/S
-        b = self.k1 * self.C * self.Gamma_hat
-        # A = (self.Gamma_history[-1] - b/a) * math.e**(-a*t0)
-        A = (self.Gamma_history[-1] - b/a)
-
-        Gamma = b/a + A * math.e**(-a*dt)
+        # Gamma = b/a + A * math.e**(-a*dt)
+        Gamma_old = self.Gamma_history[-1]
+        Gamma = ((S+S_old)/4*(self.k1*self.C*self.Gamma_hat + (self.k1*self.C - self.k2)*Gamma_old) + S_old*Gamma_old/dt)/(S/dt - (S + S_old)/4*(self.k1*self.C - self.k2))
         self.Gamma_history.append(Gamma)
 
         gamma_new = self.gamma_0 - self.m1 * Gamma/self.Gamma_hat
+
+
+        file_name = "gamma_history"
+        open_file = open(file_name, "rb")
+        gamma_history = pickle.load(open_file)
+        open_file.close()
+
+        file_name = "S_history"
+        open_file = open(file_name, "rb")
+        S_history = pickle.load(open_file)
+        open_file.close()
+
+        gamma_history.append(gamma_new)
+        S_history.append(S)
+
+
+        file_name = "gamma_history"
+        open_file = open(file_name, "wb")
+        pickle.dump(gamma_history, open_file)
+        open_file.close()
+
+        file_name = "S_history"
+        open_file = open(file_name, "wb")
+        pickle.dump(S_history, open_file)
+        open_file.close()
+
+
         print("gamma: " +str(gamma_new))
         self.gamma_t_val.set_value(gamma_new)
 

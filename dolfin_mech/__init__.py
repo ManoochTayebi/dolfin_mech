@@ -19,6 +19,7 @@ from .Linear_Homogenization import *
 from .Loading import *
 from .Material import *
 from .Material_Elastic import *
+from .Material_Elastic_New import *
 from .Material_Elastic_CiarletGeymonat import *
 from .Material_Elastic_CiarletGeymonatNeoHookean import *
 from .Material_Elastic_CiarletGeymonatNeoHookeanMooneyRivlin import *

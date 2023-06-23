@@ -43,7 +43,6 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
         HyperelasticityProblem.__init__(self)
 
         self.Gamma_history = []
-        self.Gamma_history.append(0)
         self.w_solid_incompressibility = w_solid_incompressibility
         self.vertices = vertices
         if (mesh is not None):
