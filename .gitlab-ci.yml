@@ -14,6 +14,7 @@ tests-on-ubuntu-20.04:
     - ci.inria.fr
     - large
   image: registry.gitlab.inria.fr/inria-ci/docker/ubuntu:20.04
+  image: registry.gitlab.inria.fr/inria-ci/docker/ubuntu:20.04
   # image: ubuntu:20.04
   # image: quay.io/fenicsproject/stable:latest # MG20211221: somehow this does not work
   # image: python $ MG20211221: this seems to be debian not ubuntu, which is necessary for ppa install
@@ -40,6 +41,7 @@ tests-on-ubuntu-22.04:
   tags:
     - ci.inria.fr
     - large
+  image: registry.gitlab.inria.fr/inria-ci/docker/ubuntu:22.04
   image: registry.gitlab.inria.fr/inria-ci/docker/ubuntu:22.04
   # image: ubuntu:22.04
   script:
