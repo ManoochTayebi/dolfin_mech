@@ -28,23 +28,22 @@ class NewElasticMaterial(ElasticMaterial):
 
         self.C1 = dolfin.Constant(parameters["C1"])
         self.C2 = dolfin.Constant(parameters["C2"])
-        self.C3 = dolfin.Constant(parameters["C3"])
 
         if   (self.kinematics.dim == 2):
-                self.Psi   = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3)) + self.C3 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
-                self.Sigma = self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv*(1 + self.kinematics.IC)) * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3)) + 2*self.C3 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv # Mahdi
+                self.Psi   = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3)) + 100*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
+                self.Sigma = self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv*(1 + self.kinematics.IC)) * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3)) + 2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv # Mahdi
 
-                self.Psi_old   = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.J_old**(-2/3) * (1 + self.kinematics.IC_old - 3))) + self.C3 * (self.kinematics.J_old**2 - 1 - 2*dolfin.ln(self.kinematics.J_old))
-                self.Sigma_old = self.C1 * self.kinematics.J_old**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv_old*(1 + self.kinematics.IC_old)) * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC_old - 3))) + 2*self.C3 * (self.kinematics.J_old**2 - 1) * self.kinematics.C_inv_old # Mahdi
+                self.Psi_old   = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.J_old**(-2/3) * (1 + self.kinematics.IC_old - 3))) + 100*self.C1 * (self.kinematics.J_old**2 - 1 - 2*dolfin.ln(self.kinematics.J_old))
+                self.Sigma_old = self.C1 * self.kinematics.J_old**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv_old*(1 + self.kinematics.IC_old)) * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC_old - 3))) + 2*100*self.C1 * (self.kinematics.J_old**2 - 1) * self.kinematics.C_inv_old # Mahdi
 
 
                 # assert (0), "ToDo. Aborting."
         elif (self.kinematics.dim == 3):
-            self.Psi = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.IC - 3)) + self.C3 *(self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
-            self.Sigma = self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3 *self.kinematics.IC*self.kinematics.C_inv) * dolfin.exp(self.C2*(self.C2(self.kinematics.IC - 3))) + 2*self.C3 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv
+            self.Psi = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.IC - 3)) + 100*self.C1 *(self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
+            self.Sigma = self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3 *self.kinematics.IC*self.kinematics.C_inv) * dolfin.exp(self.C2*(self.C2(self.kinematics.IC - 3))) + 2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv
 
-            self.Psi_old = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.IC_old - 3)) + self.C3 *(self.kinematics.J_old**2 - 1 - 2*dolfin.ln(self.kinematics.J_old))
-            self.Sigma_old = self.C1 * self.kinematics.J_old**(-2/3) *(self.kinematics.I - 1/3 *self.kinematics.IC_old*self.kinematics.C_inv_old) * dolfin.exp(self.C2*(self.C2(self.kinematics.IC_old - 3))) + 2*self.C3 * (self.kinematics.J_old**2 - 1) * self.kinematics.C_inv_old
+            self.Psi_old = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.IC_old - 3)) + 100*self.C1 *(self.kinematics.J_old**2 - 1 - 2*dolfin.ln(self.kinematics.J_old))
+            self.Sigma_old = self.C1 * self.kinematics.J_old**(-2/3) *(self.kinematics.I - 1/3 *self.kinematics.IC_old*self.kinematics.C_inv_old) * dolfin.exp(self.C2*(self.C2(self.kinematics.IC_old - 3))) + 2*100*self.C1 * (self.kinematics.J_old**2 - 1) * self.kinematics.C_inv_old
 
 
 
