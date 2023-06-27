@@ -88,7 +88,7 @@ def HallowBox_Mesh(
         gmsh.model.occ.addDisk(xc=xmax, yc=ymin, zc=0, rx=r0, ry=r0, tag=hole_tag2)
         gmsh.model.occ.addDisk(xc=xmax, yc=ymax, zc=0, rx=r0, ry=r0, tag=hole_tag3)
         gmsh.model.occ.addDisk(xc=xmin, yc=ymax, zc=0, rx=r0, ry=r0, tag=hole_tag4)
-        gmsh.model.occ.cut(objectDimTags=[(2, box_tag)], toolDimTags=[(2, hole_tag2), (2, hole_tag2), (2, hole_tag3), (2, hole_tag4)], tag=rve_tag)
+        gmsh.model.occ.cut(objectDimTags=[(2, box_tag)], toolDimTags=[(2, hole_tag2), (2, hole_tag2), (2, hole_tag2), (2, hole_tag3), (2, hole_tag4)], tag=rve_tag)
 
         gmsh.model.occ.synchronize()
         gmsh.model.addPhysicalGroup(dim=2, tags=[rve_tag])
