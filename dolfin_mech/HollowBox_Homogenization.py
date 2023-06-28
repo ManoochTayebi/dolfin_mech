@@ -45,7 +45,7 @@ def HollowBox_Homogenization(
     ################################################################ Problem ###
 
 
-    homo = dmech.HomogenizationLinear(dim=dim,
+    homo = dmech.HomogenizationProblem(dim=dim,
                             mesh=mesh,
                             mat_params=mat_params,
                             vol=vol,
