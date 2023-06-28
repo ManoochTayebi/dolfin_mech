@@ -21,7 +21,7 @@ import numpy
 
 #############################################################################
 
-class HomogenizationLinear():
+class HomogenizationProblem():
 
 
 
