@@ -14,7 +14,6 @@ from .HeartSlice_Mesh import *
 from .Kinematics import *
 from .Kinematics_Inverse import *
 from .Kinematics_Linearized import *
-from .Linear_Homogenization import *
 from .Loading import *
 from .Material import *
 from .Material_Elastic import *
@@ -65,6 +64,7 @@ from .Problem_Hyperelasticity_Inverse import *
 from .Problem_Hyperelasticity_MicroPoro import *
 from .Problem_Hyperelasticity_Poro import *
 from .Problem_Hyperelasticity_Poro_Inverse import *
+from .Problem_Homogenization import *
 from .QOI import *
 from .RivlinCube_Elasticity import *
 from .RivlinCube_Hyperelasticity import *

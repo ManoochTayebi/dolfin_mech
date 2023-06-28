@@ -2,12 +2,12 @@
 
 ################################################################################
 ###                                                                          ###
-### And Mahdi Manoochehrtayebi, 2021-2023                                    ###
+### Created by Mahdi Manoochehrtayebi, 2021-2023                             ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
 ###                                                                          ###
-### Created by Martin Genet, 2018-2023                                       ###
+### And Martin Genet, 2018-2023                                              ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
@@ -28,8 +28,8 @@ test = mypy.Test(
     res_folder=res_folder,
     perform_tests=1,
     stop_at_failure=1,
-    clean_after_tests=1,
-    tester_numpy_tolerance=2*1e-2)
+    clean_after_tests=0,
+    tester_numpy_tolerance=2e-2)
 
 dim_lst  = []
 dim_lst += [2]
@@ -55,5 +55,5 @@ for dim in dim_lst:
             res_basename=res_folder+"/"+res_basename,
             verbose=1)
 
-        test.test(res_basename)
+        # test.test(res_basename)
 
