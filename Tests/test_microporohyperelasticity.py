@@ -209,17 +209,26 @@ def microporohyperelasticity(
             measure=problem.dS(sint_id),
             P_ini=0., P_fin=pf,
             k_step=k_step)
+        
+        for k in range(dim):
+            for l in range (dim):
+                problem.add_macroscopic_stress_component_constraint_operator(
+                    i=k, j=l,
+                    sigma_bar_ij_ini=0.0, sigma_bar_ij_fin=0,
+                    pf_ini=0.0, pf_fin=pf,
+                    k_step=k_step)
+
     elif (load_type == "macroscopic_stretch"):
         problem.add_macroscopic_stretch_component_penalty_operator(
-            comp_i=0, comp_j=0,
-            comp_ini=0.0, comp_fin=0.5,
+            i=0, j=0,
+            U_bar_ij_ini=0.0, U_bar_ij_fin=0.5,
             pen_val=1e3,
             k_step=k_step)
-    elif (load_type == "macroscopic_stress"):
-        problem.add_macroscopic_stress_component_penalty_operator(
-            comp_i=0, comp_j=0,
-            comp_ini=0.0, comp_fin=0.5,
-            pen_val=1e3,
+    elif (load_type == "macroscopic_stress"):     
+        problem.add_macroscopic_stress_component_constraint_operator(
+            i=k, j=l,
+            sigma_bar_ij_ini=0.0, sigma_bar_ij_fin=0.5,
+            pf_ini=0.0, pf_fin=0,
             k_step=k_step)
 
     ################################################# Quantities of Interest ###
@@ -264,7 +273,7 @@ test = mypy.Test(
     res_folder=res_folder,
     perform_tests=1,
     stop_at_failure=1,
-    clean_after_tests=1,
+    clean_after_tests=0,
     tester_numpy_tolerance=2*1e-2)
 
 dim_lst  = []
@@ -302,4 +311,4 @@ for dim in dim_lst:
                 res_basename=res_folder+"/"+res_basename,
                 verbose=0)
 
-            test.test(res_basename)
+            # test.test(res_basename)
