@@ -82,13 +82,8 @@ class TimeIntegrator():
 
             self.problem.update_qois(dt=1)
             self.qoi_printer.write_line([0.]+[qoi.value for qoi in self.problem.qois])
-<<<<<<< HEAD
 
         self.problem.update_fois()
-=======
-        # print([self.problem.qois[0].value])
-        
->>>>>>> f86a0353825e9b67fbb7f784495eb1ae7db1ae7b
         self.write_sol = bool(write_sol)
         if (self.write_sol):
             self.write_sol_filebasename = write_sol if (type(write_sol) is str) else sys.argv[0][:-3]+"-sol"

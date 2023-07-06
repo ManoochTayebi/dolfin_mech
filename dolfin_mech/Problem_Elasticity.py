@@ -32,8 +32,7 @@ class ElasticityProblem(Problem):
             quadrature_degree=None,
             foi_degree=0,
             elastic_behavior=None,
-            elastic_behaviors=None,
-            mesh_bbox=None):
+            elastic_behaviors=None):
 
         Problem.__init__(self)
 
@@ -72,14 +71,14 @@ class ElasticityProblem(Problem):
                 elastic_behaviors=elastic_behaviors)
             
 
-            if (mesh_bbox is not None):
-                self.mesh_bbox = mesh_bbox
-            d = [0.]*self.dim
-            for k_dim in range(self.dim):
-                d[k_dim] = self.mesh_bbox[2*k_dim+1] - self.mesh_bbox[2*k_dim+0]
-            self.V0 = numpy.prod(d) # MG20230210: This should be computed from vertices, right?
-            self.Vs0 = self.mesh_V0
-            self.Vf0 = self.V0 - self.Vs0
+            # if (mesh_bbox is not None):
+            #     self.mesh_bbox = mesh_bbox
+            # d = [0.]*self.dim
+            # for k_dim in range(self.dim):
+            #     d[k_dim] = self.mesh_bbox[2*k_dim+1] - self.mesh_bbox[2*k_dim+0]
+            # self.V0 = numpy.prod(d) # MG20230210: This should be computed from vertices, right?
+            # self.Vs0 = self.mesh_V0
+            # self.Vf0 = self.V0 - self.Vs0
 
 
 

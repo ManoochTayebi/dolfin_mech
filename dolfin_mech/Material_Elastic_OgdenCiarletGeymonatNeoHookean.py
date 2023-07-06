@@ -39,8 +39,10 @@ class OgdenCiarletGeymonatNeoHookeanElasticMaterial(ElasticMaterial):
         self.sigma_old = self.bulk.sigma_old + self.dev.sigma_old
 
 
-        # self.p_hydro = -(sum((self.Sigma*self.kinematics.C)[i, i] for i in range(self.kinematics.dim))+ self.Sigma_zz)/3/self.kinematics.J
-        self.p_hydro = -(dolfin.tr(self.Sigma.T*self.kinematics.C)+ self.Sigma_zz)/3/self.kinematics.J
+        if (self.kinematics.dim == 2):
+                self.p_hydro = -(dolfin.tr(self.Sigma.T*self.kinematics.C)+ self.Sigma_ZZ)/3/self.kinematics.J
+        elif (self.kinematics.dim == 3):
+                self.p_hydro = -(dolfin.tr(self.Sigma.T*self.kinematics.C))/3/self.kinematics.J
 
         # self.Sigma_dev = self.Sigma - self.p_hydro * self.kinematics.I
         self.Sigma_dev = self.Sigma + self.p_hydro * self.kinematics.J * self.kinematics.C_inv

@@ -43,7 +43,7 @@ class QOI():
 
 
 
-    def update_assembly(self, dt=None):
+    def update_assembly(self, dt=None, t_step=None):
 
         # print(self.name)
         # print(self.expr)
@@ -63,7 +63,7 @@ class QOI():
 
 
 
-    def update_direct(self, dt=None):
+    def update_direct(self, dt=None, t_step=None):
         
         self.value = self.expr(self.point)
 

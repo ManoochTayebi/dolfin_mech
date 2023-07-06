@@ -53,6 +53,8 @@ class InverseKinematics():
             self.F_old = dolfin.inv(self.f_old)
             self.J_old = dolfin.det(self.F_old)
             self.C_old = self.F_old.T * self.F_old
+            self.C_inv_old = dolfin.inv(self.C_old)
+            self.IC_old    = dolfin.tr(self.C_old)
             self.E_old = (self.C_old - self.I)/2
 
             self.F_bar_old = self.J_old**(-1/self.dim) * self.F_old

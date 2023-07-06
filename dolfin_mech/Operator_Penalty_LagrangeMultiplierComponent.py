@@ -6,14 +6,11 @@
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
-<<<<<<< HEAD:dolfin_mech/Operator_TensorSymmetry.py
 ###                                                                          ###
 ### And Mahdi Manoochehrtayebi, 2021-2023                                    ###
 ###                                                                          ###
 ### École Polytechnique, Palaiseau, France                                   ###
 ###                                                                          ###
-=======
->>>>>>> f86a0353825e9b67fbb7f784495eb1ae7db1ae7b:dolfin_mech/Operator_Penalty_LagrangeMultiplierComponent.py
 ################################################################################
 
 import dolfin
