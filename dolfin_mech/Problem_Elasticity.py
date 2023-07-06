@@ -8,6 +8,9 @@
 ###                                                                          ###
 ################################################################################
 
+import dolfin
+import numpy
+
 import dolfin_mech as dmech
 from .Problem import Problem
 
@@ -29,7 +32,8 @@ class ElasticityProblem(Problem):
             quadrature_degree=None,
             foi_degree=0,
             elastic_behavior=None,
-            elastic_behaviors=None):
+            elastic_behaviors=None,
+            mesh_bbox=None):
 
         Problem.__init__(self)
 
@@ -66,6 +70,16 @@ class ElasticityProblem(Problem):
 
             self.add_elasticity_operators(
                 elastic_behaviors=elastic_behaviors)
+            
+
+            if (mesh_bbox is not None):
+                self.mesh_bbox = mesh_bbox
+            d = [0.]*self.dim
+            for k_dim in range(self.dim):
+                d[k_dim] = self.mesh_bbox[2*k_dim+1] - self.mesh_bbox[2*k_dim+0]
+            self.V0 = numpy.prod(d) # MG20230210: This should be computed from vertices, right?
+            self.Vs0 = self.mesh_V0
+            self.Vf0 = self.V0 - self.Vs0
 
 
 
@@ -245,6 +259,39 @@ class ElasticityProblem(Problem):
         if (self.w_incompressibility):
             self.add_hydrostatic_pressure_operator()
             self.add_incompressibility_operator()
+
+
+    def add_macroscopic_stress_component_constraint_operator(self,
+            k_step=None,
+            **kwargs):
+
+        for operator in self.operators:
+            if hasattr(operator, "material"):
+                material = operator.material
+                break
+
+        operator = dmech.MacroscopicStressComponentConstraintOperator(
+            U_bar=self.get_displacement_subsol().subfunc,
+            U_bar_test=self.get_displacement_subsol().dsubtest,
+            kinematics=self.kinematics,
+            material=material,
+            V0=self.V0,
+            Vs0=self.Vs0,
+            measure=self.dV,
+            **kwargs)
+        return self.add_operator(operator, k_step=k_step)
+    
+
+    def add_macroscopic_stretch_component_penalty_operator(self,
+            k_step=None,
+            **kwargs):
+
+        operator = dmech.MacroscopicStretchComponentPenaltyOperator(
+            U_bar=dolfin.grad(self.get_displacement_subsol().subfunc),
+            U_bar_test=dolfin.grad(self.get_displacement_subsol().dsubtest),
+            measure=self.dV,
+            **kwargs)
+        return self.add_operator(operator, k_step=k_step)
 
 
 

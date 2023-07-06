@@ -455,10 +455,11 @@ class Problem():
 
 
 
-    def update_qois(self, dt=None):
+    # def update_qois(self, dt=None, t_step=None, dS=None):
+    def update_qois(self, dt=None, t_step=None):
 
         for qoi in self.qois:
-            qoi.update(dt)
+            qoi.update(dt, t_step, self.kinematics, self.dV, self.dS)
 
 ################################################################## operators ###
 
@@ -472,11 +473,7 @@ class Problem():
             self.steps[k_step].operators += [operator]
         return operator
 
-################################################################## operators ###
 
-# MG20230131: Loading operators should not be there,
-# but they are shared between Elasticity & HyperElasticity problems,
-# so it is more convenient for the moment.
 
     def add_volume_force0_loading_operator(self,
             k_step=None,
@@ -583,8 +580,8 @@ class Problem():
             **kwargs):
 
         operator = dmech.SurfaceTension0LoadingOperator(
-            u=self.get_displacement_subsol().subfunc,
-            u_test=self.get_displacement_subsol().dsubtest,
+            u=self.get_macroscopic_stretch_subsol().subfunc,
+            u_test=self.get_macroscopic_stretch_subsol().dsubtest,
             kinematics=self.kinematics,
             N=self.mesh_normals,
             **kwargs)
@@ -642,7 +639,7 @@ class Problem():
             **kwargs)
         return self.add_operator(operator=operator, k_step=k_step)
 
-################################################################ constraints ###
+
 
     def add_constraint(self,
             *args,
@@ -659,12 +656,12 @@ class Problem():
 ###################################################################### steps ###
 
     def add_step(self,
-            Deltat=1.,
+            Deltat=1,
             **kwargs):
 
         if len(self.steps) == 0:
             t_ini = 0.
-            t_fin = Deltat
+            t_fin = 1
         else:
             t_ini = self.steps[-1].t_fin
             t_fin = t_ini + Deltat
