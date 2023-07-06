@@ -461,10 +461,13 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             **kwargs):
 
         operator = dmech.SurfaceTensionLoadingOperator(
+            # U=self.U_bar + self.get_displacement_perturbation_subsol().subfunc,
+            # U_test=self.U_bar + self.get_displacement_perturbation_subsol().dsubtest,
             U=self.get_displacement_perturbation_subsol().subfunc,
             U_test=self.get_displacement_perturbation_subsol().dsubtest,
             kinematics=self.kinematics,
             N=self.mesh_normals,
+            dS=self.dS,
             **kwargs)
         return self.add_operator(operator=operator, k_step=k_step)
 
@@ -478,6 +481,7 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             u_test=self.get_displacement_perturbation_subsol().dsubtest,
             kinematics=self.kinematics,
             N=self.mesh_normals,
+            dS=self.dS,
             **kwargs)
         return self.add_operator(operator=operator, k_step=k_step)
 
