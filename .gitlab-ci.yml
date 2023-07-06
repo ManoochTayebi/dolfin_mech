@@ -16,11 +16,8 @@ tests-on-ubuntu-20.04:
   image: registry.gitlab.inria.fr/inria-ci/docker/ubuntu:20.04
   # image: quay.io/fenicsproject/stable:latest # MG20211221: somehow this does not work
   # image: python $ MG20211221: this seems to be debian not ubuntu, which is necessary for ppa install
-<<<<<<< HEAD
-=======
   # image: ubuntu:20.04
   image: FROM registry.gitlab.inria.fr/inria-ci/docker/ubuntu:20.04
->>>>>>> f86a0353825e9b67fbb7f784495eb1ae7db1ae7b
   script:
     # - uname -a
     # - conda env list # MG20211221: conda not available in python image
