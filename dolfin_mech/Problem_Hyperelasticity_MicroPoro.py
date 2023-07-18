@@ -83,11 +83,11 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
             self.U_bar      = dolfin.dot(self.get_macroscopic_stretch_subsol().subfunc , self.X-self.X_0)
             self.U_bar_old  = dolfin.dot(self.get_macroscopic_stretch_subsol().func_old, self.X-self.X_0)
-            # self.U_bar_test = dolfin.dot(self.get_macroscopic_stretch_subsol().dsubtest, self.X-self.X_0)
+            self.U_bar_test = dolfin.dot(self.get_macroscopic_stretch_subsol().dsubtest, self.X-self.X_0)
 
             self.U_tot      = self.U_bar      + self.get_displacement_perturbation_subsol().subfunc
             self.U_tot_old  = self.U_bar_old  + self.get_displacement_perturbation_subsol().func_old
-            # self.U_tot_test = self.U_bar_test + self.get_displacement_perturbation_subsol().dsubtest
+            self.U_tot_test = self.U_bar_test + self.get_displacement_perturbation_subsol().dsubtest
 
             self.set_quadrature_degree(
                 quadrature_degree=quadrature_degree)
@@ -196,108 +196,108 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
 
 
-    def get_solid_pressure_name(self):
+    # def get_solid_pressure_name(self):
 
-        return "p_s"
-
-
-
-    def add_solid_pressure_subsol(self,
-            degree):
-
-        self.solid_pressure_degree = degree
-        if (degree == 0):
-            self.add_scalar_subsol(
-                name=self.get_solid_pressure_name(),
-                family="DG",
-                degree=0)
-        else:
-            self.add_scalar_subsol(
-                name=self.get_solid_pressure_name(),
-                family="CG",
-                degree=self.solid_pressure_degree)
+    #     return "p_s"
 
 
 
-    def get_solid_pressure_subsol(self):
+    # def add_solid_pressure_subsol(self,
+    #         degree):
 
-        assert (self.w_solid_incompressibility),\
-            "There is no solid pressure subsol. Aborting."
-        return self.get_subsol(self.get_solid_pressure_name())
-
-
-
-    def get_solid_pressure_function_space(self):
-
-        assert (self.w_solid_incompressibility),\
-            "There is no solid pressure function space. Aborting."
-        return self.get_subsol_function_space(name=self.get_solid_pressure_name())
-
-
-
-    def get_deformed_total_volume_name(self):
-
-        return "v"
+    #     self.solid_pressure_degree = degree
+    #     if (degree == 0):
+    #         self.add_scalar_subsol(
+    #             name=self.get_solid_pressure_name(),
+    #             family="DG",
+    #             degree=0)
+    #     else:
+    #         self.add_scalar_subsol(
+    #             name=self.get_solid_pressure_name(),
+    #             family="CG",
+    #             degree=self.solid_pressure_degree)
 
 
 
-    def add_deformed_total_volume_subsol(self):
+    # def get_solid_pressure_subsol(self):
 
-        self.add_scalar_subsol(
-            name=self.get_deformed_total_volume_name(),
-            family="R",
-            degree=0,
-            init_val=self.V0)
+    #     assert (self.w_solid_incompressibility),\
+    #         "There is no solid pressure subsol. Aborting."
+    #     return self.get_subsol(self.get_solid_pressure_name())
 
 
 
-    def get_deformed_total_volume_subsol(self):
+    # def get_solid_pressure_function_space(self):
 
-        return self.get_subsol(self.get_deformed_total_volume_name())
-
-
-
-    def get_deformed_solid_volume_name(self):
-
-        return "v_s"
+    #     assert (self.w_solid_incompressibility),\
+    #         "There is no solid pressure function space. Aborting."
+    #     return self.get_subsol_function_space(name=self.get_solid_pressure_name())
 
 
 
-    def add_deformed_solid_volume_subsol(self):
+    # def get_deformed_total_volume_name(self):
 
-        self.add_scalar_subsol(
-            name=self.get_deformed_solid_volume_name(),
-            family="R",
-            degree=0,
-            init_val=self.mesh_V0)
+    #     return "v"
 
 
 
-    def get_deformed_solid_volume_subsol(self):
+    # def add_deformed_total_volume_subsol(self):
 
-        return self.get_subsol(self.get_deformed_solid_volume_name())
-
-
-
-    def get_deformed_fluid_volume_name(self):
-
-        return "v_f"
+    #     self.add_scalar_subsol(
+    #         name=self.get_deformed_total_volume_name(),
+    #         family="R",
+    #         degree=0,
+    #         init_val=self.V0)
 
 
 
-    def add_deformed_fluid_volume_subsol(self):
+    # def get_deformed_total_volume_subsol(self):
 
-        self.add_scalar_subsol(
-            name=self.get_deformed_fluid_volume_name(),
-            family="R",
-            degree=0,
-            init_val=self.Vf0)
+    #     return self.get_subsol(self.get_deformed_total_volume_name())
 
 
 
-    def get_deformed_fluid_volume_subsol(self):
+    # def get_deformed_solid_volume_name(self):
 
-        return self.get_subsol(self.get_deformed_fluid_volume_name())
+    #     return "v_s"
+
+
+
+    # def add_deformed_solid_volume_subsol(self):
+
+    #     self.add_scalar_subsol(
+    #         name=self.get_deformed_solid_volume_name(),
+    #         family="R",
+    #         degree=0,
+    #         init_val=self.mesh_V0)
+
+
+
+    # def get_deformed_solid_volume_subsol(self):
+
+    #     return self.get_subsol(self.get_deformed_solid_volume_name())
+
+
+
+    # def get_deformed_fluid_volume_name(self):
+
+    #     return "v_f"
+
+
+
+    # def add_deformed_fluid_volume_subsol(self):
+
+    #     self.add_scalar_subsol(
+    #         name=self.get_deformed_fluid_volume_name(),
+    #         family="R",
+    #         degree=0,
+    #         init_val=self.Vf0)
+
+
+
+    # def get_deformed_fluid_volume_subsol(self):
+
+    #     return self.get_subsol(self.get_deformed_fluid_volume_name())
 
 
 
@@ -421,6 +421,7 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             V0=self.V0,
             Vs0=self.Vs0,
             measure=self.dV,
+            N=self.mesh_normals,
             **kwargs)
         return self.add_operator(operator, k_step=k_step)
 
@@ -463,8 +464,41 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
         operator = dmech.SurfaceTensionLoadingOperator(
             # U=self.U_bar + self.get_displacement_perturbation_subsol().subfunc,
             # U_test=self.U_bar + self.get_displacement_perturbation_subsol().dsubtest,
-            U=self.get_displacement_perturbation_subsol().subfunc,
-            U_test=self.get_displacement_perturbation_subsol().dsubtest,
+            U_hat=self.get_displacement_perturbation_subsol().subfunc,
+            U_hat_test=self.get_displacement_perturbation_subsol().dsubtest,
+            # U_bar=self.U_bar,
+            # U_bar_test=self.U_bar_test,
+            U_bar=self.get_macroscopic_stretch_subsol().subfunc,
+            U_bar_test=self.get_macroscopic_stretch_subsol().dsubtest,
+            U_tot=self.U_tot,
+            U_tot_test=self.U_tot_test,
+            sol=self.sol_func,
+            sol_test=self.dsol_test,
+            X=self.X,
+            X_0=self.X_0,
+            kinematics=self.kinematics,
+            N=self.mesh_normals,
+            dS=self.dS,
+            **kwargs)
+        return self.add_operator(operator=operator, k_step=k_step)
+    
+
+
+    def add_surface_tension_loading_operator_new(self,
+            k_step=None,
+            **kwargs):
+
+        operator = dmech.SurfaceTensionLoadingOperatorNew(
+            U_hat=self.get_displacement_perturbation_subsol().subfunc,
+            U_hat_test=self.get_displacement_perturbation_subsol().dsubtest,
+            U_bar=self.get_macroscopic_stretch_subsol().subfunc,
+            U_bar_test=self.get_macroscopic_stretch_subsol().dsubtest,
+            U_tot=self.U_tot,
+            U_tot_test=self.U_tot_test,
+            X=self.X,
+            X_0=self.X_0,
+            sol=self.sol_func,
+            sol_test=self.dsol_test,
             kinematics=self.kinematics,
             N=self.mesh_normals,
             dS=self.dS,
