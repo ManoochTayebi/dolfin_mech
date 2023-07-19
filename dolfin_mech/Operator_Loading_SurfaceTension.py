@@ -61,8 +61,8 @@ class SurfaceTensionLoadingOperator(Operator):
         # self.res_form =  dolfin.derivative(Pi, U_hat, U_hat_test) +  dolfin.derivative(Pi, U_bar[0, 0], U_bar_test[0, 0]) +  dolfin.derivative(Pi, U_bar[1, 1], U_bar_test[1, 1]) +  dolfin.derivative(Pi, U_bar[1, 0], U_bar_test[1, 0])+  dolfin.derivative(Pi, U_bar[0, 1], U_bar_test[0, 1])
         # self.res_form = dolfin.derivative(Pi, U_tot)* (dolfin.derivative(U_tot, U_bar, U_bar_test) + dolfin.derivative(U_tot, U_hat, U_hat_test))
         # self.res_form = dolfin.derivative(Pi, U_hat, U_hat_test) #+ dolfin.derivative(Pi, U_bar, U_bar_test)
-        self.res_form = dolfin.derivative(Pi, U_hat, U_hat_test) 
-        # self.res_form = dolfin.derivative(Pi, sol, sol_test)
+        # self.res_form = dolfin.derivative(Pi, U_hat, U_hat_test) 
+        self.res_form = dolfin.derivative(Pi, sol, sol_test)
 
         self.kinematics=kinematics
 

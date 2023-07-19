@@ -171,10 +171,10 @@ class NewElasticMaterial(ElasticMaterial):
 
 
                 self.Psi   = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3))\
-                           + 100*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
+                           + 300*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
                 
                 self.Sigma = self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv*(1 + self.kinematics.IC))* dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3))\
-                           + 2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv # Mahdi
+                           + 2*300*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv # Mahdi
                 
                 
                 # self.Psi   = self.C1/self.C2/self.C3/2 * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3)**self.C3)\
