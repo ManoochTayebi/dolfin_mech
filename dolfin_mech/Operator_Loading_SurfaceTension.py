@@ -53,14 +53,16 @@ class SurfaceTensionLoadingOperator(Operator):
         # gamma_S = gamma * (1 - 1.6*dolfin.exp(-0.5*S/self.S0))
         FmTN = dolfin.dot(dolfin.inv(kinematics.F).T, N)
         T = dolfin.sqrt(dolfin.inner(FmTN, FmTN))
-        Pi = gamma * (T * kinematics.J - dolfin.Constant(1))* self.measure
+        Pi = gamma * T * kinematics.J * self.measure
+        # Pi = gamma * (T * kinematics.J - dolfin.Constant(1))* self.measure
         # self.res_form = dolfin.derivative(Pi, U, U_test)*dolfin.derivative(U_tot, U)% + dolfin.derivative(Pi, U_bar, U_bar_test)*dolfin.derivative(U_tot, U_bar)
         # self.res_form = dolfin.inner(dolfin.derivative(Pi, U, U_test), (X - X_0)) + dolfin.derivative(Pi, U_bar, U_bar_test)
         # self.res_form = dolfin.derivative(Pi, U_bar) * dolfin.derivative(U_tot, U_bar, U_bar_test) + dolfin.derivative(Pi, U_hat) * dolfin.derivative(U_tot, U_hat, U_hat_test)
         # self.res_form =  dolfin.derivative(Pi, U_hat, U_hat_test) +  dolfin.derivative(Pi, U_bar[0, 0], U_bar_test[0, 0]) +  dolfin.derivative(Pi, U_bar[1, 1], U_bar_test[1, 1]) +  dolfin.derivative(Pi, U_bar[1, 0], U_bar_test[1, 0])+  dolfin.derivative(Pi, U_bar[0, 1], U_bar_test[0, 1])
         # self.res_form = dolfin.derivative(Pi, U_tot)* (dolfin.derivative(U_tot, U_bar, U_bar_test) + dolfin.derivative(U_tot, U_hat, U_hat_test))
         # self.res_form = dolfin.derivative(Pi, U_hat, U_hat_test) #+ dolfin.derivative(Pi, U_bar, U_bar_test)
-        self.res_form = dolfin.derivative(Pi, sol, sol_test)
+        self.res_form = dolfin.derivative(Pi, U_hat, U_hat_test) 
+        # self.res_form = dolfin.derivative(Pi, sol, sol_test)
 
         self.kinematics=kinematics
 
