@@ -94,8 +94,11 @@ class SurfaceTensionLoadingOperator(Operator):
 class SurfaceTension0LoadingOperator(Operator):
 
     def __init__(self,
+            U_tot,
             u,
             u_test,
+            sol,
+            sol_test,
             kinematics,
             N,
             measure,
@@ -121,9 +124,10 @@ class SurfaceTension0LoadingOperator(Operator):
         dim = u.ufl_shape[0]
         I = dolfin.Identity(dim)
         Pi = gamma * (1 + dolfin.inner(
-            kinematics.E,
+            self.kinematics.E,
             I - dolfin.outer(N,N))) * self.measure
-        self.res_form = dolfin.derivative(Pi, u, u_test) # MG20211220: Is that correct?!
+        # self.res_form = dolfin.derivative(Pi, u, u_test) # MG20211220: Is that correct?!
+        self.res_form = dolfin.derivative(Pi, sol, sol_test) # MG20211220: Is that correct?!
 
 
 
@@ -135,9 +139,12 @@ class SurfaceTension0LoadingOperator(Operator):
     def set_dt(self,
             t_step,
             dt):
-        S = dolfin.assemble(dolfin.sqrt(dolfin.dot(dolfin.inv(self.kinematics.F.T), self.N)[0]**2+ dolfin.dot(dolfin.inv(self.kinematics.F.T), self.N)[1]**2)*self.kinematics.J * self.dS(0))
+        # S = dolfin.assemble(dolfin.sqrt(dolfin.dot(dolfin.inv(self.kinematics.F.T), self.N)[0]**2+ dolfin.dot(dolfin.inv(self.kinematics.F.T), self.N)[1]**2)*self.kinematics.J * self.dS(0))
+        FmTN = dolfin.dot(dolfin.inv(self.kinematics.F).T, self.N)
+        T = dolfin.sqrt(dolfin.inner(FmTN, FmTN))
+        S_val = dolfin.assemble(T*self.kinematics.J * self.dS(0))
         # print("gamma_hat:" +str((1 - 2.5*dolfin.exp(-1*S/self.S0))))
-        self.S_t.set_value(S)
+        self.S_t.set_value(S_val)
 
 
 ################################################################################
@@ -170,6 +177,36 @@ class SurfaceTensionLoadingOperatorNew(Operator):
             val=gamma_val, val_ini=gamma_ini, val_fin=gamma_fin)
         gamma = self.tv_gamma.val
 
+        self.S_t = dmech.TimeVaryingConstant(0.)
+        S = self.S_t.val
+        
+        # gamma_S = gamma * (1 - 10*dolfin.exp(-2.35*S/self.S0))
+        # gamma_S = gamma * (1 - 1.6*dolfin.exp(-0.5*S/self.S0))
+        # gamma_S = gamma * (1 - 2.7*dolfin.exp(-1*S/self.S0))
+        S_hat = S/self.S0
+        # a = 0.0523
+        # b = 13.24
+        # c = 2.31
+        # d = 1.039
+        # gamma_S = gamma*(d + (a - d)/(1 + (S_hat/c)**b))
+
+        # y0 = -0.01111168
+        # v0 = -0.005012312
+        # K = -2.365393
+        # gamma_S = gamma*(y0 - v0/K*(1 - dolfin.exp(-K*S_hat)))
+
+        a = -1.42964750e-02
+        b = 2.19311234e-03
+        c = 2.35165948e+00
+        gamma_S = gamma*(a + b*dolfin.exp(c*S_hat))
+
+        # a = 11058820000
+        # b = 21.839
+        # c = 2.8277
+        # gamma_S = gamma* a * dolfin.exp(- ((S_hat - b)**2)/2*c**2)
+
+        # gamma_S = gamma*(0.3*S_hat - 0.25)
+        # gamma_S = gamma*(0.5*S_hat - 0.5)
 
         dim = U_hat.ufl_shape[0]
         I = dolfin.Identity(dim)
@@ -181,9 +218,10 @@ class SurfaceTensionLoadingOperatorNew(Operator):
         fs = dolfin.div(taus)
 
 
-        # self.res_form = dolfin.inner(taus, dolfin.grad(U_tot_test)) * self.measure
-        # self.res_form = - dolfin.inner(fs, U_tot_test) * self.measure
-        self.res_form = - dolfin.inner(fs, U_hat_test) * self.measure
+        self.res_form = dolfin.inner(taus, dolfin.grad(U_tot_test)) *  self.kinematics.J * T * self.measure
+        # self.res_form = dolfin.inner(taus, dolfin.grad(U_hat_test)) *  self.kinematics.J * T * self.measure
+        # self.res_form = - dolfin.dot(fs, U_tot_test) *  self.kinematics.J * T  * self.measure
+        # self.res_form = - dolfin.inner(fs, U_hat_test) *  self.kinematics.J * T * self.measure
 
 
 
@@ -195,4 +233,22 @@ class SurfaceTensionLoadingOperatorNew(Operator):
 
     def returne_surface_rate(self):
         self.tv_gamma.surface_change_rate()
+
+
+    def set_dt(self,
+            t_step,
+            dt):
+        # S_val = dolfin.assemble(dolfin.sqrt(dolfin.dot(dolfin.inv(self.kinematics.F.T), self.N)[0]**2+ dolfin.dot(dolfin.inv(self.kinematics.F.T), self.N)[1]**2)*self.kinematics.J * self.dS(0))
+        FmTN = dolfin.dot(dolfin.inv(self.kinematics.F).T, self.N)
+        T = dolfin.sqrt(dolfin.inner(FmTN, FmTN))
+        S_val = dolfin.assemble(T*self.kinematics.J * self.dS(0))
+        # S_hat = S_val/self.S0
+        # a = 0.0523
+        # b = 13.24
+        # c = 2.31
+        # d = 1.039
+        # gamma_hat = (d + (a - d)/(1 + (S_hat/c)**b))
+        # print("gamma_hat:" +str(gamma_hat))
+        self.S_t.set_value(S_val)
+
 

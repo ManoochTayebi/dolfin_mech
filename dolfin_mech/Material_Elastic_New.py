@@ -170,11 +170,11 @@ class NewElasticMaterial(ElasticMaterial):
                 ################# IC_bar
 
 
-                self.Psi   = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3))\
-                           + 300*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
+                # self.Psi   = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3))\
+                #            + 300*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
                 
-                self.Sigma = self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv*(1 + self.kinematics.IC))* dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3))\
-                           + 2*300*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv # Mahdi
+                # self.Sigma = self.C1 * self.kinematics.J**(-2/3) *(self.kinematics.I - 1/3*self.kinematics.C_inv*(1 + self.kinematics.IC))* dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3))\
+                #            + 2*300*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv # Mahdi
                 
                 
                 # self.Psi   = self.C1/self.C2/self.C3/2 * dolfin.exp(self.C2*(self.kinematics.J**(-2/3) * (1 + self.kinematics.IC) - 3)**self.C3)\
@@ -188,12 +188,12 @@ class NewElasticMaterial(ElasticMaterial):
                 
                 ################### Power C3
 
-                # self.Psi   =  self.C1/self.C2/self.C3/2 * dolfin.exp(self.C2*(self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J))**self.C3) \
-                #            +  self.C4 * (self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J))\
-                #            +  100*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
-                # self.Sigma =  self.C1 * (self.kinematics.I - self.kinematics.C_inv) * (self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J))**(self.C3 - 1) * dolfin.exp(self.C2*(self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J))**self.C3) \
-                #            +  2 * self.C4 * (self.kinematics.I - self.kinematics.C_inv)\
-                #            +  2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv 
+                self.Psi   =  self.C1/self.C2/self.C3/2 * dolfin.exp(self.C2*(self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J))**self.C3) \
+                           +  self.C4 * (self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J))\
+                           +  100*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
+                self.Sigma =  self.C1 * (self.kinematics.I - self.kinematics.C_inv) * (self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J))**(self.C3 - 1) * dolfin.exp(self.C2*(self.kinematics.IC - 2 - 2*dolfin.ln(self.kinematics.J))**self.C3) \
+                           +  2 * self.C4 * (self.kinematics.I - self.kinematics.C_inv)\
+                           +  2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv 
 
 
                 # Power 1
@@ -207,22 +207,22 @@ class NewElasticMaterial(ElasticMaterial):
                 
                 # assert (0), "ToDo. Aborting."
         elif (self.kinematics.dim == 3):
-            # self.Psi   =  self.C1/self.C2/self.C3/2 * dolfin.exp(self.C2*(self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))**self.C3) \
-            #                +  self.C4 * (self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))\
-            #                +  100*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
-            # self.Sigma =  self.C1 * (self.kinematics.I - self.kinematics.C_inv) * (self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))**(self.C3 - 1) * dolfin.exp(self.C2*(self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))**self.C3) \
-            #             +  2 * self.C4 * (self.kinematics.I - self.kinematics.C_inv)\
-            #             +  2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv 
+            self.Psi   =  self.C1/self.C2/self.C3/2 * dolfin.exp(self.C2*(self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))**self.C3) \
+                           +  self.C4 * (self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))\
+                           +  100*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
+            self.Sigma =  self.C1 * (self.kinematics.I - self.kinematics.C_inv) * (self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))**(self.C3 - 1) * dolfin.exp(self.C2*(self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))**self.C3) \
+                        +  2 * self.C4 * (self.kinematics.I - self.kinematics.C_inv)\
+                        +  2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv 
             
 
             # Power 1
 
-            self.Psi   =  self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))) \
-                           +  self.C4 * (self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))\
-                           +  100*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
-            self.Sigma =  self.C1 * (self.kinematics.I - self.kinematics.C_inv)* dolfin.exp(self.C2*(self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))) \
-                        +  2 * self.C4 * (self.kinematics.I - self.kinematics.C_inv)\
-                        +  2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv 
+            # self.Psi   =  self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))) \
+            #                +  self.C4 * (self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))\
+            #                +  100*self.C1 * (self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
+            # self.Sigma =  self.C1 * (self.kinematics.I - self.kinematics.C_inv)* dolfin.exp(self.C2*(self.kinematics.IC - 3 - 2*dolfin.ln(self.kinematics.J))) \
+            #             +  2 * self.C4 * (self.kinematics.I - self.kinematics.C_inv)\
+            #             +  2*100*self.C1 * (self.kinematics.J**2 - 1) * self.kinematics.C_inv 
             
             
             # self.Psi = self.C1/self.C2/2 * dolfin.exp(self.C2*(self.kinematics.IC - 3)) + 300*self.C1 *(self.kinematics.J**2 - 1 - 2*dolfin.ln(self.kinematics.J))
