@@ -64,6 +64,7 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             self.V0 = numpy.prod(d) # MG20230210: This should be computed from vertices, right?
             self.Vs0 = self.mesh_V0
             self.Vf0 = self.V0 - self.Vs0
+            # self.S0 = dolfin.assemble(dolfin.Constant(1), self.dS(0))
 
             self.set_measures(
                 domains=domains_mf,
@@ -135,10 +136,35 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
 
 
+    def get_surface_area_name(self):
+
+        return "S_area"
+
+    def add_surface_area_subsol(self,
+            degree=0,
+            init_val=None):
+            
+        self.add_scalar_subsol(
+            name=self.get_surface_area_name(),
+            family="R",
+            degree=degree,
+            init_val=init_val)
+
+
+    def get_surface_area_subsol(self):
+
+        return self.get_subsol(self.get_surface_area_name())
+
+    def get_surface_area_space(self):
+
+        return self.get_subsol_function_space(name=self.get_surface_area_name())
+    
+
+
+
     def get_macroscopic_stretch_name(self):
 
         return "U_bar"
-
 
 
     def add_macroscopic_stretch_subsol(self,
@@ -194,6 +220,15 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
         return self.get_subsol_function_space(name=self.get_displacement_perturbation_name())
 
+
+
+
+    # def get_surface_area_function_space(self):
+
+    #     assert (self.w_solid_incompressibility),\
+    #         "There is no solid pressure function space. Aborting."
+    #     return self.get_subsol_function_space(name=self.get_surface_area_name())
+    
 
 
     # def get_solid_pressure_name(self):
@@ -310,7 +345,7 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
 
         self.add_displacement_perturbation_subsol(
             degree=displacement_perturbation_degree)
-
+        
         if (self.w_solid_incompressibility):
             if (solid_pressure_degree is None):
                 solid_pressure_degree = displacement_perturbation_degree-1
@@ -322,6 +357,8 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
         # self.add_deformed_total_volume_subsol()
         # self.add_deformed_solid_volume_subsol()
         # self.add_deformed_fluid_volume_subsol()
+        self.add_surface_area_subsol()
+
 
 
 
@@ -495,6 +532,7 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             U_bar_test=self.get_macroscopic_stretch_subsol().dsubtest,
             U_tot=self.U_tot,
             U_tot_test=self.U_tot_test,
+            S_area = self.get_surface_area_subsol().subfunc,
             X=self.X,
             X_0=self.X_0,
             sol=self.sol_func,
@@ -563,6 +601,21 @@ class MicroPoroHyperelasticityProblem(HyperelasticityProblem):
             X=self.X,
             measure=self.dV)
         self.add_operator(operator=operator, k_step=k_step)
+
+
+    def add_surface_area_operator(self,
+            k_step=None,
+            **kwargs):
+
+        operator = dmech.DeformedSurfaceAreaOperator(
+            S_area = self.get_surface_area_subsol().subfunc,
+            S_area_test = self.get_surface_area_subsol().dsubtest,
+            kinematics=self.kinematics,
+            N=self.mesh_normals,
+            dS=self.dS,
+            # measure=self.dV,
+            **kwargs)
+        return self.add_operator(operator=operator, k_step=k_step)
 
 
 
